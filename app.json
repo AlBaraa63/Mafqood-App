@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Mafqood",
+    "slug": "mafqood",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B2D3A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mafqood.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B2D3A"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.mafqood.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "mafqood-dubai-lost-found"
+      }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Mafqood to access your photos to upload item images.",
+          "cameraPermission": "Allow Mafqood to take photos of lost or found items."
+        }
+      ]
+    ]
+  }
+}
