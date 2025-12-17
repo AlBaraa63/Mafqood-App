@@ -4,15 +4,14 @@
  * Follows DubaiNow-level polish with bilingual Arabic/English support
  */
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  I18nManager,
-  Animated,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -24,6 +23,8 @@ import { BottomTabParamList } from '../types/itemTypes';
 import { MafqoodLogo } from '../components/ui/MafqoodLogo';
 
 type NavigationProp = BottomTabNavigationProp<BottomTabParamList>;
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // ========================================
 // Reusable Components
@@ -84,37 +85,6 @@ function StepRow({ stepNumber, icon, title, description, isLast, isRTL }: StepRo
 // Main Home Screen
 // ========================================
 
-// Animated stat counter component
-function AnimatedStat({ value, label, icon }: { value: string; label: string; icon: keyof typeof Ionicons.glyphMap }) {
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 4,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
-
-  return (
-    <Animated.View style={[styles.statItem, { opacity: opacityAnim, transform: [{ scale: scaleAnim }] }]}>
-      <View style={styles.statIconContainer}>
-        <Ionicons name={icon} size={14} color={colors.primary.accent} />
-      </View>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </Animated.View>
-  );
-}
-
 export default function HomeScreen() {
   const { t, language, isRTL, setLanguage } = useLanguage();
   const navigation = useNavigation<NavigationProp>();
@@ -123,13 +93,6 @@ export default function HomeScreen() {
   // Toggle language function
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'ar' : 'en');
-  };
-
-  // Mock stats data (in real app, fetch from API)
-  const stats = {
-    reunited: '1,247',
-    locations: '45+',
-    avgTime: '2.5h',
   };
 
   // Feature chips data (3 chips that fit in one row)
@@ -186,10 +149,6 @@ export default function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <Ionicons name="notifications-outline" size={20} color={colors.text.white} />
-                {/* Notification badge */}
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationBadgeText}>3</Text>
-                </View>
               </TouchableOpacity>
 
               {/* Profile Avatar Placeholder */}
@@ -213,13 +172,31 @@ export default function HomeScreen() {
             {t('home_hero_subtitle')}
           </Text>
 
-          {/* Live Stats Row */}
-          <View style={[styles.statsRow, isRTL && styles.rtlRow]}>
-            <AnimatedStat value={stats.reunited} label={t('stats_reunited')} icon="checkmark-circle" />
-            <View style={styles.statDivider} />
-            <AnimatedStat value={stats.locations} label={t('stats_locations')} icon="location" />
-            <View style={styles.statDivider} />
-            <AnimatedStat value={stats.avgTime} label={t('stats_avg_time')} icon="time" />
+          {/* ================================
+              QUICK ACTIONS - Moved inside hero for prominence
+              ================================ */}
+          <View style={styles.quickActionsSection}>
+            <TouchableOpacity
+              style={[styles.actionButtonCompact, { backgroundColor: 'rgba(255, 255, 255, 0.15)' }]}
+              onPress={() => navigation.navigate('Report', { type: 'lost' })}
+              activeOpacity={0.85}
+            >
+              <View style={[styles.actionButtonIconCompact, { backgroundColor: 'rgba(255, 255, 255, 0.2)' }]}>
+                <Ionicons name="search" size={22} color={colors.text.white} />
+              </View>
+              <Text style={styles.actionButtonTextCompact}>{t('nav_report_lost')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionButtonCompact, { backgroundColor: colors.primary.accent }]}
+              onPress={() => navigation.navigate('Report', { type: 'found' })}
+              activeOpacity={0.85}
+            >
+              <View style={[styles.actionButtonIconCompact, { backgroundColor: 'rgba(255, 255, 255, 0.25)' }]}>
+                <Ionicons name="hand-left" size={22} color={colors.text.white} />
+              </View>
+              <Text style={styles.actionButtonTextCompact}>{t('nav_report_found')}</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -255,43 +232,21 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* ================================
-            QUICK ACTIONS ROW (All 3 in one row)
-            ================================ */}
-        <View style={styles.quickActionsSection}>
-          <TouchableOpacity
-            style={[styles.actionButtonCompact, { backgroundColor: colors.primary.dark }]}
-            onPress={() => navigation.navigate('Report', { type: 'lost' })}
-            activeOpacity={0.85}
-          >
-            <View style={styles.actionButtonIconCompact}>
-              <Ionicons name="search" size={20} color={colors.text.white} />
-            </View>
-            <Text style={styles.actionButtonTextCompact} numberOfLines={2}>{t('nav_report_lost')}</Text>
-          </TouchableOpacity>
+        {/* View Matches Button */}
+        <TouchableOpacity
+          style={styles.matchesButton}
+          onPress={() => navigation.navigate('Matches')}
+          activeOpacity={0.8}
+        >
+          <View style={styles.matchesIcon}>
+            <Ionicons name="git-compare" size={20} color={colors.primary.accent} />
+          </View>
+          <Text style={styles.matchesText}>{t('nav_matches')}</Text>
+          <Ionicons name="chevron-forward" size={18} color={colors.text.secondary} />
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.actionButtonCompact, { backgroundColor: colors.primary.accent }]}
-            onPress={() => navigation.navigate('Report', { type: 'found' })}
-            activeOpacity={0.85}
-          >
-            <View style={styles.actionButtonIconCompact}>
-              <Ionicons name="hand-left" size={20} color={colors.text.white} />
-            </View>
-            <Text style={styles.actionButtonTextCompact} numberOfLines={2}>{t('nav_report_found')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.matchesButtonCompact}
-            onPress={() => navigation.navigate('Matches')}
-            activeOpacity={0.8}
-          >
-            <View style={styles.matchesIconCompact}>
-              <Ionicons name="git-compare" size={20} color={colors.primary.accent} />
-            </View>
-            <Text style={styles.matchesTextCompact} numberOfLines={2}>{t('nav_matches')}</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Bottom spacing */}
+        <View style={{ height: spacing.xl }} />
       </ScrollView>
     </View>
   );
@@ -312,6 +267,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: layout.screenPadding,
+    flexGrow: 1,
   },
 
   // RTL helpers
@@ -334,10 +290,10 @@ const styles = StyleSheet.create({
     marginHorizontal: -layout.screenPadding,
     paddingHorizontal: layout.screenPadding,
     paddingTop: spacing.md,
-    paddingBottom: spacing.xl,
+    paddingBottom: spacing.lg,
     borderBottomLeftRadius: borderRadius.xxl,
     borderBottomRightRadius: borderRadius.xxl,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
 
   // Header Bar
@@ -345,7 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   headerRight: {
     flexDirection: 'row',
@@ -374,24 +330,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
-  notificationBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: '#EF4444',
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.primary.dark,
-  },
-  notificationBadgeText: {
-    fontSize: 9,
-    fontWeight: typography.weights.bold,
-    color: colors.text.white,
-  },
   profileBtn: {
     width: 32,
     height: 32,
@@ -403,118 +341,51 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
 
-  // Stats Row
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    marginTop: spacing.lg,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.lg,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statIconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xs,
-  },
-  statValue: {
-    fontSize: typography.sizes.md,
-    fontWeight: typography.weights.bold,
-    color: colors.text.white,
-  },
-  statLabel: {
-    fontSize: 10,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-
   heroTitle: {
-    fontSize: typography.sizes.title,
+    fontSize: SCREEN_HEIGHT < 700 ? typography.sizes.lg : typography.sizes.title,
     fontWeight: typography.weights.bold,
     color: colors.text.white,
     textAlign: 'center',
-    marginBottom: spacing.sm,
-    lineHeight: 36,
+    marginBottom: spacing.xs,
+    lineHeight: SCREEN_HEIGHT < 700 ? 28 : 34,
   },
   heroSubtitle: {
     fontSize: typography.sizes.sm,
     color: 'rgba(255, 255, 255, 0.75)',
     textAlign: 'center',
-    lineHeight: 22,
-    paddingHorizontal: spacing.md,
+    lineHeight: 20,
+    paddingHorizontal: spacing.sm,
+    marginBottom: spacing.lg,
   },
 
   // ================================
-  // QUICK ACTIONS ROW (Compact)
+  // QUICK ACTIONS (Inside Hero)
   // ================================
   quickActionsSection: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginBottom: spacing.lg,
   },
   actionButtonCompact: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.lg,
-    ...shadows.md,
+    gap: spacing.sm,
   },
   actionButtonIconCompact: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.xs,
   },
   actionButtonTextCompact: {
-    fontSize: typography.sizes.xs,
+    fontSize: typography.sizes.sm,
     fontWeight: typography.weights.bold,
     color: colors.text.white,
-    textAlign: 'center',
-  },
-  matchesButtonCompact: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.background.primary,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    ...shadows.sm,
-  },
-  matchesIconCompact: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.primary.accentLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xs,
-  },
-  matchesTextCompact: {
-    fontSize: typography.sizes.xs,
-    fontWeight: typography.weights.semibold,
-    color: colors.text.primary,
-    textAlign: 'center',
   },
 
   // ================================
@@ -523,8 +394,8 @@ const styles = StyleSheet.create({
   featuresRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
+    gap: spacing.xs,
+    marginBottom: spacing.md,
   },
   featureChip: {
     flex: 1,
@@ -533,21 +404,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.background.primary,
     borderWidth: 1,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: spacing.xs,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.full,
-    gap: spacing.sm,
+    gap: spacing.xs,
     ...shadows.sm,
   },
   featureChipIcon: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   featureChipText: {
-    fontSize: typography.sizes.xs,
+    fontSize: 11,
     fontWeight: typography.weights.semibold,
     color: colors.text.primary,
   },
@@ -556,10 +427,10 @@ const styles = StyleSheet.create({
   // HOW IT WORKS
   // ================================
   howItWorksSection: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   sectionTitle: {
-    fontSize: typography.sizes.lg,
+    fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
     color: colors.text.primary,
     marginBottom: spacing.sm,
@@ -572,23 +443,23 @@ const styles = StyleSheet.create({
   },
   stepRow: {
     flexDirection: 'row',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   stepNumberCol: {
     alignItems: 'center',
-    width: 32,
+    width: 28,
     marginRight: spacing.sm,
   },
   stepNumberCircle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: colors.primary.dark,
     alignItems: 'center',
     justifyContent: 'center',
   },
   stepNumberText: {
-    fontSize: typography.sizes.xs,
+    fontSize: 11,
     fontWeight: typography.weights.bold,
     color: colors.text.white,
   },
@@ -601,16 +472,16 @@ const styles = StyleSheet.create({
   },
   stepContentCol: {
     flex: 1,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.xs,
   },
   stepHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.xs,
+    marginBottom: 2,
   },
   stepIconBox: {
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     borderRadius: borderRadius.sm,
     backgroundColor: colors.primary.accentLight,
     alignItems: 'center',
@@ -624,9 +495,39 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stepDesc: {
-    fontSize: typography.sizes.xs,
+    fontSize: 11,
     color: colors.text.secondary,
-    lineHeight: 18,
-    marginLeft: 36, // Align with title after icon
-   },
+    lineHeight: 16,
+    marginLeft: 34,
+  },
+
+  // ================================
+  // MATCHES BUTTON
+  // ================================
+  matchesButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background.primary,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+    ...shadows.sm,
+  },
+  matchesIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.primary.accentLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+  },
+  matchesText: {
+    flex: 1,
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.semibold,
+    color: colors.text.primary,
+  },
 });
