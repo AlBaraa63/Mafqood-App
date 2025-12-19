@@ -82,7 +82,7 @@ export default function Button({
       },
       ghost: {
         backgroundColor: 'transparent',
-        shadowOpacity: 0,
+        boxShadow: 'none',
         elevation: 0,
       },
     };
