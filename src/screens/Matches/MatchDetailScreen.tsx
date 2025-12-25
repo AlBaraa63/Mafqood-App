@@ -207,6 +207,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
     marginTop: spacing.xs,
+    textAlign: 'left',
   },
   progressBar: {
     height: 8,
@@ -260,6 +261,7 @@ const styles = StyleSheet.create({
   itemMeta: {
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
   actions: {
     gap: spacing.md,

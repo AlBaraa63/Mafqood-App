@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: typography.fontSize.md,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
   footer: {
     flexDirection: 'row',

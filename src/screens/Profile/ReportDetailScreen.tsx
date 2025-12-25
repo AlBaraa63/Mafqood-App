@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     color: colors.text.secondary,
     lineHeight: 22,
+    textAlign: 'left',
   },
   sectionTitle: {
     fontSize: typography.fontSize.lg,
@@ -137,6 +138,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
     marginBottom: spacing.xs,
+    textAlign: 'left',
   },
   backButton: {
     marginTop: spacing['2xl'],

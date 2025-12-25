@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     color: colors.text.secondary,
     lineHeight: 22,
+    textAlign: 'left',
   },
   card: {
     gap: spacing.md,
@@ -77,6 +78,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     color: colors.text.primary,
     lineHeight: 22,
+    textAlign: 'left',
   },
   metaRow: {
     marginTop: spacing.sm,
@@ -89,6 +91,7 @@ const styles = StyleSheet.create({
   metaValue: {
     fontSize: typography.fontSize.sm,
     color: colors.text.primary,
+    textAlign: 'left',
   },
   backButton: {
     marginTop: spacing.md,

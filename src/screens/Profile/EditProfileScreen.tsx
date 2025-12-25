@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     color: colors.text.secondary,
     marginBottom: spacing['2xl'],
+    textAlign: 'left',
   },
   actions: {
     flexDirection: 'row',

@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
     marginTop: spacing.xs,
+    textAlign: 'left',
   },
   rtl: {
     flexDirection: 'row-reverse',
@@ -395,6 +396,7 @@ const styles = StyleSheet.create({
   noMatchesText: {
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
 });
 

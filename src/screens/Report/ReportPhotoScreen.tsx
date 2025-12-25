@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: typography.fontSize.md,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
   uploadButtons: {
     flexDirection: 'row',
@@ -255,6 +256,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     color: colors.info.dark,
     lineHeight: 20,
+    textAlign: 'left',
   },
   checkboxContainer: {
     flexDirection: 'row',

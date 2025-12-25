@@ -233,6 +233,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: typography.fontSize.md,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
   field: {
     marginBottom: spacing.lg,
@@ -305,6 +306,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     color: colors.info.dark,
     lineHeight: typography.fontSize.sm * typography.lineHeight.relaxed,
+    textAlign: 'left',
   },
   termsContainer: {
     flexDirection: 'row',
@@ -338,6 +340,7 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
     lineHeight: typography.fontSize.sm * typography.lineHeight.relaxed,
+    textAlign: 'left',
   },
   errorText: {
     fontSize: typography.fontSize.sm,

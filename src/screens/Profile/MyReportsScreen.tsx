@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
   meta: {
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
 });
 

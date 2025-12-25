@@ -1,6 +1,6 @@
 /**
- * Home Screen
- * Modern, on-brand landing page aligned with Mafqood web style
+ * Home Screen - Professional Lost and Found App
+ * Enhanced with modern 2025 UI/UX trends and lost & found best practices
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -272,7 +273,7 @@ export const HomeScreen: React.FC = () => {
             </View>
             <View style={styles.quickLinkTextWrap}>
               <Text style={[styles.quickLinkLabel, isRTL && styles.textRight]}>{t('view_matches')}</Text>
-              <Text style={[styles.quickLinkSub, isRTL && styles.textRight]}>{t('matches_subtitle')}</Text>
+              <Text style={[styles.quickLinkSub, isRTL && styles.textRight]} numberOfLines={1}>{t('matches_subtitle')}</Text>
             </View>
             <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.text.tertiary} />
           </Card>
@@ -286,7 +287,7 @@ export const HomeScreen: React.FC = () => {
             </View>
             <View style={styles.quickLinkTextWrap}>
               <Text style={[styles.quickLinkLabel, isRTL && styles.textRight]}>{t('my_reports')}</Text>
-              <Text style={[styles.quickLinkSub, isRTL && styles.textRight]}>{t('home_reports_shortcut')}</Text>
+              <Text style={[styles.quickLinkSub, isRTL && styles.textRight]} numberOfLines={1}>{t('home_reports_shortcut')}</Text>
             </View>
             <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.text.tertiary} />
           </Card>
@@ -339,7 +340,11 @@ export const HomeScreen: React.FC = () => {
         {/* Brand Pillars */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>{t('home_pillars_title')}</Text>
-          <View style={styles.pillarsGrid}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.pillarsGrid}
+          >
             {valueCards.map((card) => (
               <Card
                 key={card.title}
@@ -353,7 +358,7 @@ export const HomeScreen: React.FC = () => {
                 <Text style={[styles.pillarDesc, isRTL && styles.textRight]}>{card.desc}</Text>
               </Card>
             ))}
-          </View>
+          </ScrollView>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -436,6 +441,7 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     lineHeight: 22,
     marginBottom: spacing['2xl'],
+    textAlign: 'left',
   },
   ctaRow: {
     flexDirection: 'row',
@@ -453,11 +459,9 @@ const styles = StyleSheet.create({
   heroStatsRow: {
     flexDirection: 'row',
     gap: spacing.md,
-    flexWrap: 'wrap',
   },
   heroStat: {
     flex: 1,
-    minWidth: 140,
     backgroundColor: colors.neutral[50],
     borderRadius: borderRadius.xl,
     padding: spacing.md,
@@ -471,25 +475,24 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   heroStatTitle: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     fontWeight: typography.fontWeight.bold,
     color: colors.text.primary,
   },
   heroStatSubtitle: {
     marginTop: spacing.xs,
-    fontSize: typography.fontSize.xs,
+    fontSize: 10,
     color: colors.text.tertiary,
+    textAlign: 'left',
   },
 
   // Quick Links
   quickLinks: {
     flexDirection: 'row',
     gap: spacing.md,
-    flexWrap: 'wrap',
   },
   quickLinkCard: {
     flex: 1,
-    minWidth: '48%',
     padding: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
@@ -508,13 +511,14 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   quickLinkLabel: {
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
     color: colors.text.primary,
   },
   quickLinkSub: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
 
   // Section
@@ -602,18 +606,16 @@ const styles = StyleSheet.create({
   guestBannerSub: {
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
   
   // Pillars
   pillarsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing.md,
-    justifyContent: 'space-between',
   },
   pillarCard: {
-    flexBasis: '48%',
-    flexGrow: 1,
+    flex: 1,
     gap: spacing.sm,
   },
   pillarIconBubble: {
@@ -625,14 +627,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pillarTitle: {
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
     color: colors.text.primary,
   },
   pillarDesc: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     color: colors.text.secondary,
-    lineHeight: 20,
+    lineHeight: 16,
+    textAlign: 'left',
   },
 });
 

@@ -301,6 +301,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: typography.fontSize.md,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
   helper: {
     flexDirection: 'row',
@@ -314,6 +315,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: typography.fontSize.sm,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
   field: {
     marginBottom: spacing.md,

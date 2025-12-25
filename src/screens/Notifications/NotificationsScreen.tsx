@@ -347,6 +347,7 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     marginBottom: spacing.xs,
     lineHeight: typography.fontSize.sm * typography.lineHeight.normal,
+    textAlign: 'left',
   },
   timestamp: {
     fontSize: typography.fontSize.xs,

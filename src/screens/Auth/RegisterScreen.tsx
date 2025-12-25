@@ -219,6 +219,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: typography.fontSize.md,
     color: colors.text.secondary,
+    textAlign: 'left',
   },
   form: {
     marginBottom: spacing['2xl'],
