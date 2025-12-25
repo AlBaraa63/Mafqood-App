@@ -18,7 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Card, StatusChip, EmptyState, Loading, SectionHeader, TypeChip } from '../../components/common';
+import { Button, Card, StatusChip, EmptyState, Loading, SectionHeader, TypeChip, Header } from '../../components/common';
 import { useTranslation, useFormatDate } from '../../hooks';
 import { useAuthStore, useReportFormStore } from '../../hooks/useStore';
 import api from '../../api';
@@ -44,12 +44,14 @@ export const HomeScreen: React.FC = () => {
   const { t, isRTL } = useTranslation();
   const { formatRelative } = useFormatDate();
   const navigation = useNavigation<NavigationProp>();
-  const { isGuest } = useAuthStore();
+  const { isGuest, user } = useAuthStore();
   const { setType, resetForm } = useReportFormStore();
   
   const [recentItems, setRecentItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const heroStats: HeroStat[] = useMemo(() => ([
     {
@@ -100,9 +102,24 @@ export const HomeScreen: React.FC = () => {
     }
   };
   
+  // TODO: Implement notification fetching from API
+  const fetchNotifications = async () => {
+    try {
+      // const response = await api.getNotifications();
+      // if (response.success && response.data) {
+      //   setHasUnreadNotifications(response.data.hasUnread);
+      //   setNotificationCount(response.data.unreadCount);
+      // }
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+    }
+  };
+  
   useEffect(() => {
     if (!isGuest) {
       loadData();
+      // TODO: Fetch notification data from API
+      // fetchNotifications();
     } else {
       setIsLoading(false);
     }
@@ -125,6 +142,19 @@ export const HomeScreen: React.FC = () => {
   const handleReportLost = () => startReport('lost');
   
   const handleReportFound = () => startReport('found');
+  
+  const handleProfilePress = () => {
+    navigation.navigate('ProfileTab' as any);
+  };
+  
+  const handleNotificationPress = () => {
+    // Navigate to notifications screen (to be implemented)
+    // For now, just clear the badge
+    setHasUnreadNotifications(false);
+    setNotificationCount(0);
+    // TODO: Navigate to notifications screen when it's implemented
+    console.log('Navigate to notifications');
+  };
   
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -168,6 +198,16 @@ export const HomeScreen: React.FC = () => {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header with Profile and Notifications */}
+      <Header
+        avatarUrl={user?.avatarUrl}
+        userName={user?.fullName || 'Guest'}
+        hasUnreadNotifications={hasUnreadNotifications}
+        notificationCount={notificationCount}
+        onProfilePress={handleProfilePress}
+        onNotificationPress={handleNotificationPress}
+      />
+      
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
