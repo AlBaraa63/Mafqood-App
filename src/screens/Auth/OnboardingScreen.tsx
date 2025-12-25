@@ -89,11 +89,13 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
   
-  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
-    if (viewableItems.length > 0) {
-      setCurrentIndex(viewableItems[0].index || 0);
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems.length > 0) {
+        setCurrentIndex(viewableItems[0].index || 0);
+      }
     }
-  }).current;
+  ).current;
   
   const renderSlide = ({ item }: { item: OnboardingSlide }) => (
     <View style={styles.slide}>

@@ -144,16 +144,14 @@ export const HomeScreen: React.FC = () => {
   const handleReportFound = () => startReport('found');
   
   const handleProfilePress = () => {
-    navigation.navigate('ProfileTab' as any);
+    navigation.navigate('ProfileTab');
   };
   
   const handleNotificationPress = () => {
-    // Navigate to notifications screen (to be implemented)
-    // For now, just clear the badge
+    // Navigate to notifications screen
+    navigation.navigate('NotificationsTab');
     setHasUnreadNotifications(false);
     setNotificationCount(0);
-    // TODO: Navigate to notifications screen when it's implemented
-    console.log('Navigate to notifications');
   };
   
   const getStatusLabel = (status: string) => {
@@ -168,7 +166,7 @@ export const HomeScreen: React.FC = () => {
   const renderRecentItem = ({ item }: { item: Item }) => (
     <TouchableOpacity
       style={[styles.recentItemCard, isRTL && styles.cardRtl]}
-      onPress={() => navigation.navigate('MatchesTab' as any)}
+      onPress={() => navigation.navigate('MatchesTab')}
       activeOpacity={0.85}
     >
       <Image
@@ -267,7 +265,7 @@ export const HomeScreen: React.FC = () => {
           <Card
             style={StyleSheet.flatten([styles.quickLinkCard, isRTL && styles.cardRtl])}
             variant="outlined"
-            onPress={() => navigation.navigate('MatchesTab' as any)}
+            onPress={() => navigation.navigate('MatchesTab')}
           >
             <View style={styles.quickLinkIconWrap}>
               <MaterialCommunityIcons name="magnify-scan" size={22} color={colors.primary[500]} />
@@ -281,7 +279,7 @@ export const HomeScreen: React.FC = () => {
           <Card
             style={StyleSheet.flatten([styles.quickLinkCard, isRTL && styles.cardRtl])}
             variant="outlined"
-            onPress={() => navigation.navigate('ProfileTab' as any)}
+            onPress={() => navigation.navigate('ProfileTab')}
           >
             <View style={[styles.quickLinkIconWrap, { backgroundColor: colors.highlight[50] }]}>
               <MaterialCommunityIcons name="clipboard-list-outline" size={22} color={colors.highlight[500]} />
@@ -297,7 +295,7 @@ export const HomeScreen: React.FC = () => {
         {/* Recent Items (only for logged in users) */}
         {!isGuest && (
           <View style={styles.section}>
-            <SectionHeader title={t('recent_items')} actionLabel={t('view_matches')} onAction={() => navigation.navigate('MatchesTab' as any)} />
+            <SectionHeader title={t('recent_items')} actionLabel={t('view_matches')} onAction={() => navigation.navigate('MatchesTab')} />
             {isLoading ? (
               <Loading size="small" />
             ) : recentItems.length > 0 ? (

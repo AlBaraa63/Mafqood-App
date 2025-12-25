@@ -159,6 +159,7 @@ export type MainTabParamList = {
   HomeTab: undefined;
   ReportTab: undefined;
   MatchesTab: undefined;
+  NotificationsTab: undefined;
   ProfileTab: undefined;
 };
 
@@ -179,6 +180,10 @@ export type ReportStackParamList = {
 export type MatchesStackParamList = {
   MatchesList: undefined;
   MatchDetail: { matchId: string };
+};
+
+export type NotificationsStackParamList = {
+  Notifications: undefined;
 };
 
 export type ProfileStackParamList = {

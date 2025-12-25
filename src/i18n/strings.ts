@@ -73,7 +73,17 @@ const en = {
   nav_home: 'Home',
   nav_report: 'Report',
   nav_matches: 'Matches',
+  nav_notifications: 'Notifications',
   nav_profile: 'Profile',
+
+  // Notifications
+  notifications: 'Notifications',
+  no_notifications: 'No notifications yet',
+  no_unread_notifications: 'All caught up!',
+  notifications_empty_desc: 'When you receive notifications, they will appear here.',
+  mark_all_read: 'Mark all as read',
+  all: 'All',
+  unread: 'Unread',
 
   // Home
   home_hero_title: 'Lost something in Dubai?',
@@ -328,7 +338,17 @@ const ar: typeof en = {
   nav_home: 'الرئيسية',
   nav_report: 'إبلاغ',
   nav_matches: 'التطابقات',
+  nav_notifications: 'الإشعارات',
   nav_profile: 'الملف الشخصي',
+
+  // Notifications
+  notifications: 'الإشعارات',
+  no_notifications: 'لا توجد إشعارات حتى الآن',
+  no_unread_notifications: 'لقد قرأت كل شيء!',
+  notifications_empty_desc: 'عندما تتلقى إشعارات، ستظهر هنا.',
+  mark_all_read: 'وضع علامة مقروء على الكل',
+  all: 'الكل',
+  unread: 'غير مقروء',
 
   // Home
   home_hero_title: 'أضعت شيئاً في دبي؟',

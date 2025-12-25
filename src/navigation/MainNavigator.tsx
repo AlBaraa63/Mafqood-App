@@ -8,6 +8,7 @@ import {
   HomeStackParamList,
   ReportStackParamList,
   MatchesStackParamList,
+  NotificationsStackParamList,
   ProfileStackParamList,
 } from '../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -23,6 +24,7 @@ import {
 } from '../screens/Report';
 import { MatchesListScreen } from '../screens/Matches/MatchesListScreen';
 import { MatchDetailScreen } from '../screens/Matches/MatchDetailScreen';
+import { NotificationsScreen } from '../screens/Notifications';
 import { ProfileScreen } from '../screens/Profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/Profile/EditProfileScreen';
 import { MyReportsScreen } from '../screens/Profile/MyReportsScreen';
@@ -34,6 +36,7 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const ReportStack = createNativeStackNavigator<ReportStackParamList>();
 const MatchesStack = createNativeStackNavigator<MatchesStackParamList>();
+const NotificationsStack = createNativeStackNavigator<NotificationsStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
 const TabIcon: React.FC<{ label: string; active?: boolean }> = ({ label, active }) => (
@@ -73,6 +76,12 @@ const MatchesStackNavigator = () => (
   </MatchesStack.Navigator>
 );
 
+const NotificationsStackNavigator = () => (
+  <NotificationsStack.Navigator screenOptions={{ headerShown: false }}>
+    <NotificationsStack.Screen name="Notifications" component={NotificationsScreen} />
+  </NotificationsStack.Navigator>
+);
+
 const ProfileStackNavigator = () => (
   <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
     <ProfileStack.Screen name="Profile" component={ProfileScreen} />
@@ -94,9 +103,9 @@ export const MainNavigator: React.FC = () => {
         tabBarActiveTintColor: colors.accent[500],
         tabBarInactiveTintColor: colors.text.secondary,
         tabBarStyle: {
-          height: 64,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 65,
+          paddingBottom: 10,
+          paddingTop: 5,
           backgroundColor: colors.neutral.white,
           borderTopColor: colors.neutral[200],
         },
@@ -105,6 +114,7 @@ export const MainNavigator: React.FC = () => {
             HomeTab: 'home-variant-outline',
             ReportTab: 'clipboard-text-outline',
             MatchesTab: 'sparkles',
+            NotificationsTab: 'bell-outline',
             ProfileTab: 'account-circle-outline',
           };
           const name = iconMap[route.name] || 'circle-outline';
@@ -121,6 +131,7 @@ export const MainNavigator: React.FC = () => {
             HomeTab: t('nav_home'),
             ReportTab: t('nav_report'),
             MatchesTab: t('nav_matches'),
+            NotificationsTab: t('nav_notifications'),
             ProfileTab: t('nav_profile'),
           };
           return <TabIcon label={labels[route.name]} active={focused} />;
@@ -130,6 +141,7 @@ export const MainNavigator: React.FC = () => {
       <Tab.Screen name="HomeTab" component={HomeStackNavigator} />
       <Tab.Screen name="ReportTab" component={ReportStackNavigator} />
       <Tab.Screen name="MatchesTab" component={MatchesStackNavigator} />
+      <Tab.Screen name="NotificationsTab" component={NotificationsStackNavigator} />
       <Tab.Screen name="ProfileTab" component={ProfileStackNavigator} />
     </Tab.Navigator>
   );
