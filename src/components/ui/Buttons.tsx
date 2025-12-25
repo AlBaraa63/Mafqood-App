@@ -1,224 +1,124 @@
-/**
- * Button components - Native-first button variants
- * Includes haptic feedback for native feel
- */
-
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  ViewStyle,
-  TextStyle,
-  View,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { colors, borderRadius, typography, spacing, shadows } from '../../theme/theme';
-import { haptics } from '../../utils/haptics';
+import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import { colors, spacing, borderRadius, typography, shadows } from '../../theme';
+
+type Variant = 'primary' | 'secondary' | 'ghost';
+type Size = 'md' | 'lg';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
+  variant?: Variant;
+  size?: Size;
   loading?: boolean;
   disabled?: boolean;
-  icon?: keyof typeof Ionicons.glyphMap;
-  iconPosition?: 'left' | 'right';
-  style?: ViewStyle;
-  textStyle?: TextStyle;
-  fullWidth?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  iconLeft?: React.ReactNode;
 }
 
-// Base button component with shared logic
-function BaseButton({
+const baseStyles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.xl,
+    paddingHorizontal: spacing['2xl'],
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
+  },
+  md: {
+    paddingVertical: spacing.md,
+  },
+  lg: {
+    paddingVertical: spacing.lg,
+  },
+  primary: {
+    backgroundColor: colors.primary[500],
+    ...shadows.md,
+  },
+  primaryText: {
+    color: colors.neutral.white,
+  },
+  secondary: {
+    backgroundColor: colors.accent[500],
+  },
+  secondaryText: {
+    color: colors.text.primary,
+  },
+  ghost: {
+    backgroundColor: 'transparent',
+  },
+  ghostText: {
+    color: colors.primary[500],
+  },
+  text: {
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  disabled: {
+    opacity: 0.6,
+  },
+});
+
+export const PrimaryButton: React.FC<ButtonProps> = (props) => (
+  <BaseButton {...props} variant="primary" />
+);
+
+export const SecondaryButton: React.FC<ButtonProps> = (props) => (
+  <BaseButton {...props} variant="secondary" />
+);
+
+export const GhostButton: React.FC<ButtonProps> = (props) => (
+  <BaseButton {...props} variant="ghost" />
+);
+
+const BaseButton: React.FC<ButtonProps> = ({
   title,
   onPress,
-  loading = false,
-  disabled = false,
-  icon,
-  iconPosition = 'left',
+  variant = 'primary',
+  size = 'md',
+  loading,
+  disabled,
   style,
   textStyle,
-  fullWidth = false,
-  size = 'md',
-  variant,
-}: ButtonProps & { variant: 'primary' | 'secondary' | 'outline' | 'ghost' }) {
-  const isDisabled = disabled || loading;
+  iconLeft,
+}) => {
+  const container = StyleSheet.flatten([
+    baseStyles.button,
+    size === 'lg' ? baseStyles.lg : baseStyles.md,
+    variant === 'primary' && baseStyles.primary,
+    variant === 'secondary' && baseStyles.secondary,
+    variant === 'ghost' && baseStyles.ghost,
+    (disabled || loading) && baseStyles.disabled,
+    style,
+  ]);
 
-  const handlePress = () => {
-    haptics.tap();
-    onPress();
-  };
-
-  const sizeStyles = SIZE_STYLES[size];
-  const variantStyle = VARIANT_STYLES[variant];
+  const text = StyleSheet.flatten([
+    baseStyles.text,
+    variant === 'primary' && baseStyles.primaryText,
+    variant === 'secondary' && baseStyles.secondaryText,
+    variant === 'ghost' && baseStyles.ghostText,
+    textStyle,
+  ]);
 
   return (
     <TouchableOpacity
-      style={[
-        styles.base,
-        sizeStyles.button,
-        variantStyle.button,
-        isDisabled && styles.disabled,
-        fullWidth && styles.fullWidth,
-        style,
-      ]}
-      onPress={handlePress}
-      disabled={isDisabled}
+      style={container}
+      onPress={onPress}
+      disabled={disabled || loading}
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator
-          color={variantStyle.loaderColor}
-          size="small"
-        />
+        <ActivityIndicator color={variant === 'primary' ? colors.neutral.white : colors.primary[500]} />
       ) : (
         <>
-          {icon && iconPosition === 'left' && (
-            <Ionicons 
-              name={icon} 
-              size={sizeStyles.iconSize} 
-              color={isDisabled ? colors.text.light : variantStyle.textColor} 
-              style={styles.iconLeft}
-            />
-          )}
-          <Text 
-            style={[
-              styles.text, 
-              sizeStyles.text,
-              { color: isDisabled ? colors.text.light : variantStyle.textColor },
-              textStyle,
-            ]}
-          >
-            {title}
-          </Text>
-          {icon && iconPosition === 'right' && (
-            <Ionicons 
-              name={icon} 
-              size={sizeStyles.iconSize} 
-              color={isDisabled ? colors.text.light : variantStyle.textColor} 
-              style={styles.iconRight}
-            />
-          )}
+          {iconLeft}
+          <Text style={text}>{title}</Text>
         </>
       )}
     </TouchableOpacity>
   );
-}
-
-// Exported button variants
-export function PrimaryButton(props: ButtonProps) {
-  return <BaseButton {...props} variant="primary" />;
-}
-
-export function SecondaryButton(props: ButtonProps) {
-  return <BaseButton {...props} variant="secondary" />;
-}
-
-export function OutlineButton(props: ButtonProps) {
-  return <BaseButton {...props} variant="outline" />;
-}
-
-export function GhostButton(props: ButtonProps) {
-  return <BaseButton {...props} variant="ghost" />;
-}
-
-// Size configurations
-const SIZE_STYLES = {
-  sm: {
-    button: {
-      paddingHorizontal: spacing.md,
-      paddingVertical: spacing.sm,
-      minHeight: 36,
-    } as ViewStyle,
-    text: {
-      fontSize: typography.sizes.sm,
-    } as TextStyle,
-    iconSize: 16,
-  },
-  md: {
-    button: {
-      paddingHorizontal: spacing.lg,
-      paddingVertical: spacing.md,
-      minHeight: 48,
-    } as ViewStyle,
-    text: {
-      fontSize: typography.sizes.md,
-    } as TextStyle,
-    iconSize: 18,
-  },
-  lg: {
-    button: {
-      paddingHorizontal: spacing.xl,
-      paddingVertical: spacing.lg,
-      minHeight: 56,
-    } as ViewStyle,
-    text: {
-      fontSize: typography.sizes.lg,
-    } as TextStyle,
-    iconSize: 20,
-  },
 };
 
-// Variant configurations
-const VARIANT_STYLES = {
-  primary: {
-    button: {
-      backgroundColor: colors.primary.dark,
-      ...shadows.sm,
-    } as ViewStyle,
-    textColor: colors.text.white,
-    loaderColor: colors.text.white,
-  },
-  secondary: {
-    button: {
-      backgroundColor: colors.primary.accent,
-      ...shadows.sm,
-    } as ViewStyle,
-    textColor: colors.text.white,
-    loaderColor: colors.text.white,
-  },
-  outline: {
-    button: {
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      borderColor: colors.primary.dark,
-    } as ViewStyle,
-    textColor: colors.primary.dark,
-    loaderColor: colors.primary.dark,
-  },
-  ghost: {
-    button: {
-      backgroundColor: 'transparent',
-    } as ViewStyle,
-    textColor: colors.primary.dark,
-    loaderColor: colors.primary.dark,
-  },
-};
-
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.md,
-  },
-  text: {
-    fontWeight: typography.weights.semibold,
-  },
-  disabled: {
-    backgroundColor: colors.border.default,
-    borderColor: colors.border.default,
-    opacity: 0.6,
-  },
-  fullWidth: {
-    width: '100%',
-  },
-  iconLeft: {
-    marginRight: spacing.sm,
-  },
-  iconRight: {
-    marginLeft: spacing.sm,
-  },
-});
+export default PrimaryButton;

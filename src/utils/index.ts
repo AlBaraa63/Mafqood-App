@@ -1,5 +1,5 @@
 /**
- * Utility exports
+ * Utils index - Export all utility modules
  */
 
-export { hapticFeedback, haptics } from './haptics';
+export { storage } from './storage';
