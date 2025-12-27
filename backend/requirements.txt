@@ -29,3 +29,6 @@ httpx==0.26.0
 
 # Utilities
 python-dotenv==1.0.0
+ultralytics
+easyocr
+Pillow

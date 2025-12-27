@@ -49,7 +49,7 @@ export const Card: React.FC<CardProps> = ({
       <TouchableOpacity
         style={getCardStyle()}
         onPress={onPress}
-        activeOpacity={0.7}
+        activeOpacity={0.85}
       >
         {children}
       </TouchableOpacity>
@@ -61,20 +61,22 @@ export const Card: React.FC<CardProps> = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: borderRadius['2xl'],
+    borderRadius: borderRadius.xl,
     padding: spacing.lg,
     backgroundColor: colors.neutral.white,
+    overflow: 'hidden',
   },
   default: {
-    ...shadows.md,
+    ...shadows.sm,
   },
   elevated: {
     ...shadows.lg,
   },
   outlined: {
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.neutral[200],
     backgroundColor: colors.neutral.white,
+    ...shadows.sm,
   },
 });
 

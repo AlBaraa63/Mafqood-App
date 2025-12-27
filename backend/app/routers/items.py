@@ -6,11 +6,12 @@ import uuid
 from pathlib import Path
 from typing import List
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException, status
+from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app import crud, schemas, models
 from app.database import get_db
+from app.ai_services import process_image_for_report
 from app.embeddings import get_image_embedding_async, find_top_matches
 from app.config import (
     LOST_DIR,
@@ -140,6 +141,7 @@ def compute_matches(
 
 @router.post("/lost", response_model=schemas.LostItemResponse, status_code=status.HTTP_201_CREATED)
 async def report_lost_item(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(..., description="Image of the lost item"),
     title: str = Form(..., min_length=1, max_length=200),
     description: str = Form(None),
@@ -157,15 +159,33 @@ async def report_lost_item(
     # Validate image
     validate_image_file(file)
     
-    # Save image
-    # TODO: Apply privacy blurring here before saving (future enhancement)
-    image_path = await save_upload_file(file, LOST_DIR)
+    # Read image data
+    image_data = await file.read()
+    
+    # Run image processing pipeline (saves image internally)
+    processed_data = process_image_for_report(image_data, "lost")
+    image_path = processed_data["image_path"]
+    analysis_results = processed_data["analysis"]
+    
+    # --- AI-Powered Auto-fill/Enhancement ---
+    
+    # Auto-fill/enhance description with AI-extracted text
+    ai_description = analysis_results.get("extracted_text")
+    if ai_description:
+        description = f"{description or ''} [AI OCR: {ai_description}]".strip()
+    
+    # Auto-fill/enhance title with AI-detected object
+    ai_object = analysis_results.get("detected_object")
+    if ai_object and (not title or title.lower() == 'lost item'):
+        title = f"Lost {ai_object.capitalize()}"
+    elif ai_object and title and ai_object.lower() not in title.lower():
+        title = f"{title} ({ai_object.capitalize()})"
+    
+    # --- End AI-Powered Auto-fill/Enhancement ---
     
     try:
         # Compute embedding asynchronously (non-blocking)
-        full_path = Path(image_path)
-        if not full_path.is_absolute():
-            full_path = LOST_DIR.parent / image_path
+        full_path = Path(LOST_DIR.parent / image_path)
         
         embedding = await get_image_embedding_async(full_path)
         
@@ -209,6 +229,7 @@ async def report_lost_item(
 
 @router.post("/found", response_model=schemas.FoundItemResponse, status_code=status.HTTP_201_CREATED)
 async def report_found_item(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(..., description="Image of the found item"),
     title: str = Form(..., min_length=1, max_length=200),
     description: str = Form(None),
@@ -226,15 +247,33 @@ async def report_found_item(
     # Validate image
     validate_image_file(file)
     
-    # Save image
-    # TODO: Apply privacy blurring here before saving (future enhancement)
-    image_path = await save_upload_file(file, FOUND_DIR)
+    # Read image data
+    image_data = await file.read()
+    
+    # Run image processing pipeline (saves image internally)
+    processed_data = process_image_for_report(image_data, "found")
+    image_path = processed_data["image_path"]
+    analysis_results = processed_data["analysis"]
+    
+    # --- AI-Powered Auto-fill/Enhancement ---
+    
+    # Auto-fill/enhance description with AI-extracted text
+    ai_description = analysis_results.get("extracted_text")
+    if ai_description:
+        description = f"{description or ''} [AI OCR: {ai_description}]".strip()
+    
+    # Auto-fill/enhance title with AI-detected object
+    ai_object = analysis_results.get("detected_object")
+    if ai_object and (not title or title.lower() == 'found item'):
+        title = f"Found {ai_object.capitalize()}"
+    elif ai_object and title and ai_object.lower() not in title.lower():
+        title = f"{title} ({ai_object.capitalize()})"
+    
+    # --- End AI-Powered Auto-fill/Enhancement ---
     
     try:
         # Compute embedding asynchronously (non-blocking)
-        full_path = Path(image_path)
-        if not full_path.is_absolute():
-            full_path = FOUND_DIR.parent / image_path
+        full_path = Path(FOUND_DIR.parent / image_path)
         
         embedding = await get_image_embedding_async(full_path)
         

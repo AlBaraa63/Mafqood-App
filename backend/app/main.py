@@ -18,6 +18,7 @@ from app.config import (
 )
 from app.database import init_db
 from app.routers import items
+from app import ai_services # Import to ensure models are loaded
 from app import schemas
 
 
@@ -50,7 +51,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"], # Allow all origins for competition demo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

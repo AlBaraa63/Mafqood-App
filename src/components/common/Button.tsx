@@ -104,7 +104,7 @@ export const Button: React.FC<ButtonProps> = ({
       style={getContainerStyle()}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.7}
+      activeOpacity={0.85}
     >
       {loading ? (
         <ActivityIndicator
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: borderRadius['2xl'],
+    borderRadius: borderRadius.lg,
     gap: spacing.sm,
   },
   fullWidth: {
@@ -142,12 +142,12 @@ const styles = StyleSheet.create({
   size_medium: {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
-    minHeight: 48,
+    minHeight: 52,
   },
   size_large: {
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing['2xl'],
-    minHeight: 56,
+    minHeight: 60,
   },
   
   // Variants
@@ -157,13 +157,15 @@ const styles = StyleSheet.create({
   },
   primaryDisabled: {
     backgroundColor: colors.primary[200],
+    opacity: 0.6,
   },
   secondary: {
-    backgroundColor: colors.accent[500],
+    backgroundColor: colors.highlight[500],
     ...shadows.md,
   },
   secondaryDisabled: {
-    backgroundColor: colors.accent[200],
+    backgroundColor: colors.highlight[200],
+    opacity: 0.6,
   },
   outline: {
     backgroundColor: 'transparent',
@@ -173,12 +175,13 @@ const styles = StyleSheet.create({
   },
   outlineDisabled: {
     borderColor: colors.neutral[300],
+    opacity: 0.5,
   },
   ghost: {
     backgroundColor: 'transparent',
   },
   ghostDisabled: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
   
   // Text
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
     color: colors.neutral.white,
   },
   textSecondary: {
-    color: colors.neutral[900],
+    color: colors.neutral.white,
   },
   textOutline: {
     color: colors.primary[500],
