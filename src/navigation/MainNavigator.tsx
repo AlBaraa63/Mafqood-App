@@ -12,7 +12,7 @@ import {
   ProfileStackParamList,
 } from '../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { HomeScreen } from '../screens/Home/HomeScreen';
+import { HomeScreen } from '../features/home/screens/HomeScreen';
 import {
   ReportTypeSelectScreen,
   ReportPhotoScreen,
@@ -22,10 +22,10 @@ import {
   ReportReviewScreen,
   ReportSuccessScreen,
 } from '../screens/Report';
-import { MatchesListScreen } from '../screens/Matches/MatchesListScreen';
+import { MatchesListScreen } from '../features/matches/screens/MatchesListScreen';
 import { MatchDetailScreen } from '../screens/Matches/MatchDetailScreen';
 import { NotificationsScreen } from '../screens/Notifications';
-import { ProfileScreen } from '../screens/Profile/ProfileScreen';
+import { ProfileScreen } from '../features/profile/screens/ProfileScreen';
 import { EditProfileScreen } from '../screens/Profile/EditProfileScreen';
 import { MyReportsScreen } from '../screens/Profile/MyReportsScreen';
 import { ReportDetailScreen } from '../screens/Profile/ReportDetailScreen';
