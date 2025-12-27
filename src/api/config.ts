@@ -63,6 +63,9 @@ export const API_ENDPOINTS = {
   
   // Upload
   uploadImage: '/api/upload/image',
+
+  // Admin
+  resetDatabase: '/api/reset',
 };
 
 export const API_TIMEOUT = 30000; // 30 seconds

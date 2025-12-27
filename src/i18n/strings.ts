@@ -13,6 +13,8 @@ const en = {
   // Common
   continue: 'Continue',
   cancel: 'Cancel',
+  delete: 'Delete',
+  success: 'Success',
   save: 'Save',
   submit: 'Submit',
   back: 'Back',
@@ -239,6 +241,10 @@ const en = {
   language_settings: 'Language',
   about_app: 'About Mafqood',
   logout_confirm: 'Are you sure you want to log out?',
+  delete_all_data: 'Delete all data',
+  delete_all_data_confirm: 'This will remove all lost and found reports from the database. Continue?',
+  delete_all_data_success: 'All data deleted successfully.',
+  delete_all_data_error: 'Could not delete data. Please try again.',
 
   // My Reports
   my_reports_title: 'My Reports',
@@ -278,6 +284,8 @@ const ar: typeof en = {
   // Common
   continue: 'متابعة',
   cancel: 'إلغاء',
+  delete: 'حذف',
+  success: 'تم',
   save: 'حفظ',
   submit: 'إرسال',
   back: 'رجوع',
@@ -504,6 +512,10 @@ const ar: typeof en = {
   language_settings: 'اللغة',
   about_app: 'حول مفقود',
   logout_confirm: 'هل أنت متأكد من تسجيل الخروج؟',
+  delete_all_data: 'حذف كل البيانات',
+  delete_all_data_confirm: 'سيتم حذف جميع بلاغات المفقود والمعثور عليه من قاعدة البيانات. هل تريد المتابعة؟',
+  delete_all_data_success: 'تم حذف كل البيانات بنجاح.',
+  delete_all_data_error: 'تعذر حذف البيانات. حاول مرة أخرى.',
 
   // My Reports
   my_reports_title: 'بلاغاتي',

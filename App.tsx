@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppNavigator from './src/navigation';
+import { ErrorBoundary } from './src/components/common/ErrorBoundary';
 import { useAuthStore, useOnboardingStore, useLanguageStore } from './src/hooks/useStore';
 import { useTranslation } from './src/hooks';
 import { colors } from './src/theme';
@@ -52,7 +53,9 @@ export default function App() {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <View style={{ flex: 1 }} key={isRTL ? 'rtl' : 'ltr'}>
-            <AppNavigator />
+            <ErrorBoundary>
+              <AppNavigator />
+            </ErrorBoundary>
           </View>
           <StatusBar style="dark" />
         </QueryClientProvider>

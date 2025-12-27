@@ -4,12 +4,8 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  LinearGradient,
-} from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button } from '../common/Button';
 import { colors, spacing, borderRadius, shadows, typography } from '../../theme';

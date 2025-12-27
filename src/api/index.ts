@@ -6,7 +6,7 @@
 
 import { Platform } from 'react-native';
 import { API_BASE_URL, API_ENDPOINTS } from './config';
-import { get, post, uploadFormData } from './client';
+import { get, post, uploadFormData, del } from './client';
 import {
   User,
   Item,
@@ -518,6 +518,28 @@ export async function getMatchById(matchId: string): Promise<ApiResponse<Match>>
     success: false,
     error: 'Use getMatches() or getMyItems() to fetch match data',
   };
+}
+
+// ===== Admin API =====
+
+/**
+ * Danger: Delete all data from the backend database (testing/demo only)
+ */
+export async function resetDatabase(): Promise<ApiResponse<{ message: string }>> {
+  try {
+    const response = await del<{ message: string }>(API_ENDPOINTS.resetDatabase);
+    return {
+      success: true,
+      data: response,
+      message: response?.message,
+    };
+  } catch (error: any) {
+    console.error('[API] Reset database error:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to reset database',
+    };
+  }
 }
 
 /**

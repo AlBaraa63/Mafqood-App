@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -22,6 +23,7 @@ import { useTranslation } from '../../hooks';
 import { useAuthStore, useLanguageStore } from '../../hooks/useStore';
 import { ProfileStackParamList } from '../../types';
 import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
+import { resetDatabase } from '../../api';
 
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
 
@@ -30,6 +32,10 @@ interface MenuItem {
   labelKey: string;
   onPress: () => void;
   rightContent?: React.ReactNode;
+  iconColor?: string;
+  iconBackground?: string;
+  labelColor?: string;
+  disabled?: boolean;
 }
 
 export const ProfileScreen: React.FC = () => {
@@ -37,6 +43,7 @@ export const ProfileScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { user, isGuest, logout } = useAuthStore();
   const { language, setLanguage } = useLanguageStore();
+  const [isResetting, setIsResetting] = React.useState(false);
   
   const handleLogout = () => {
     Alert.alert(
@@ -51,6 +58,37 @@ export const ProfileScreen: React.FC = () => {
   
   const handleLanguageToggle = () => {
     setLanguage(language === 'en' ? 'ar' : 'en');
+  };
+
+  const handleResetAllData = () => {
+    if (isResetting) return;
+
+    Alert.alert(
+      t('delete_all_data'),
+      t('delete_all_data_confirm'),
+      [
+        { text: t('cancel'), style: 'cancel' },
+        {
+          text: t('delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setIsResetting(true);
+              const response = await resetDatabase();
+              if (response.success) {
+                Alert.alert(t('success'), response.data?.message || t('delete_all_data_success'));
+              } else {
+                Alert.alert(t('error_generic'), response.error || t('delete_all_data_error'));
+              }
+            } catch (error: any) {
+              Alert.alert(t('error_generic'), error?.message || t('delete_all_data_error'));
+            } finally {
+              setIsResetting(false);
+            }
+          },
+        },
+      ]
+    );
   };
   
   const menuItems: MenuItem[] = [
@@ -68,6 +106,16 @@ export const ProfileScreen: React.FC = () => {
       icon: 'web',
       labelKey: 'about_app',
       onPress: () => navigation.navigate('About'),
+    },
+    {
+      icon: 'delete-forever-outline',
+      labelKey: 'delete_all_data',
+      onPress: handleResetAllData,
+      iconColor: colors.error.main,
+      iconBackground: colors.error.light,
+      labelColor: colors.error.main,
+      rightContent: isResetting ? <ActivityIndicator size="small" color={colors.error.main} /> : undefined,
+      disabled: isResetting,
     },
   ];
   
@@ -144,14 +192,26 @@ export const ProfileScreen: React.FC = () => {
               style={[
                 styles.menuItem,
                 index < menuItems.length - 1 && styles.menuItemBorder,
+                item.disabled && styles.menuItemDisabled,
               ]}
               onPress={item.onPress}
               activeOpacity={0.8}
+              disabled={item.disabled}
             >
-              <View style={styles.menuIconBubble}>
-                <MaterialCommunityIcons name={item.icon} size={18} color={colors.primary[600]} />
+              <View
+                style={[
+                  styles.menuIconBubble,
+                  item.iconBackground ? { backgroundColor: item.iconBackground } : null,
+                ]}
+              >
+                <MaterialCommunityIcons name={item.icon} size={18} color={item.iconColor || colors.primary[600]} />
               </View>
-              <Text style={styles.menuLabel}>{t(item.labelKey)}</Text>
+              <Text style={[
+                styles.menuLabel,
+                item.labelColor ? { color: item.labelColor } : null,
+              ]}>
+                {t(item.labelKey)}
+              </Text>
               {item.rightContent}
               <MaterialCommunityIcons name="chevron-right" size={18} color={colors.text.tertiary} />
             </TouchableOpacity>
@@ -309,6 +369,9 @@ const styles = StyleSheet.create({
   menuItemBorder: {
     borderBottomWidth: 1,
     borderBottomColor: colors.neutral[200],
+  },
+  menuItemDisabled: {
+    opacity: 0.6,
   },
   menuIconBubble: {
     width: 36,
