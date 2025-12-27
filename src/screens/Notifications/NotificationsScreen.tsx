@@ -1,5 +1,5 @@
 /**
- * Notifications Screen
+ * Notifications Screen - Cyber-Luxe Edition
  * Displays user notifications with filtering and mark as read functionality
  */
 
@@ -11,12 +11,13 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  LinearGradient,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, typography, spacing, borderRadius } from '../../theme';
+import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
 import { Loading, EmptyState } from '../../components/common';
 import { useTranslation, useFormatDate } from '../../hooks';
 import { MainTabParamList } from '../../types';
@@ -124,11 +125,11 @@ export const NotificationsScreen: React.FC = () => {
       case 'match':
         return { name: 'target' as const, color: colors.accent[500] };
       case 'message':
-        return { name: 'message' as const, color: colors.primary[500] };
+        return { name: 'message' as const, color: colors.primary[400] };
       case 'update':
         return { name: 'update' as const, color: colors.highlight[500] };
       case 'system':
-        return { name: 'information' as const, color: colors.text.secondary };
+        return { name: 'information' as const, color: colors.neutral[300] };
     }
   };
 
@@ -142,30 +143,49 @@ export const NotificationsScreen: React.FC = () => {
     const icon = getNotificationIcon(item.type);
 
     return (
-      <TouchableOpacity
-        style={[styles.notificationCard, !item.read && styles.unreadCard]}
-        onPress={() => handleNotificationPress(item)}
-        activeOpacity={0.7}
+      <LinearGradient
+        colors={
+          !item.read
+            ? ['rgba(40, 179, 163, 0.15)', 'rgba(40, 179, 163, 0.05)']
+            : ['rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.03)']
+        }
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[
+          styles.notificationCardGradient,
+          !item.read && { borderColor: `${colors.accent[500]}40` },
+        ]}
       >
-        <View style={[styles.iconContainer, { backgroundColor: `${icon.color}15` }]}>
-          <MaterialCommunityIcons name={icon.name} size={24} color={icon.color} />
-        </View>
-
-        <View style={styles.contentContainer}>
-          <View style={styles.header}>
-            <Text style={styles.title} numberOfLines={1}>
-              {item.title}
-            </Text>
-            {!item.read && <View style={styles.unreadDot} />}
+        <TouchableOpacity
+          style={styles.notificationCard}
+          onPress={() => handleNotificationPress(item)}
+          activeOpacity={0.7}
+        >
+          <View 
+            style={[
+              styles.iconContainer, 
+              { backgroundColor: `${icon.color}25` }
+            ]}
+          >
+            <MaterialCommunityIcons name={icon.name} size={24} color={icon.color} />
           </View>
 
-          <Text style={styles.message} numberOfLines={2}>
-            {item.message}
-          </Text>
+          <View style={styles.contentContainer}>
+            <View style={styles.header}>
+              <Text style={styles.title} numberOfLines={1}>
+                {item.title}
+              </Text>
+              {!item.read && <View style={styles.unreadDot} />}
+            </View>
 
-          <Text style={styles.timestamp}>{formatRelative(item.timestamp)}</Text>
-        </View>
-      </TouchableOpacity>
+            <Text style={styles.message} numberOfLines={2}>
+              {item.message}
+            </Text>
+
+            <Text style={styles.timestamp}>{formatRelative(item.timestamp)}</Text>
+          </View>
+        </TouchableOpacity>
+      </LinearGradient>
     );
   };
 
@@ -180,40 +200,100 @@ export const NotificationsScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.screenTitle}>{t('notifications')}</Text>
-        {unreadCount > 0 && (
+      <LinearGradient
+        colors={[colors.primary[500], colors.primary[600]]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerGradient}
+      >
+        <View style={styles.headerContainer}>
+          <Text style={styles.screenTitle}>{t('notifications')}</Text>
+          {unreadCount > 0 && (
+            <TouchableOpacity
+              style={styles.markAllButton}
+              onPress={markAllAsRead}
+              activeOpacity={0.7}
+            >
+              <MaterialCommunityIcons 
+                name="check-all" 
+                size={16} 
+                color={colors.accent[500]} 
+              />
+              <Text style={styles.markAllText}>{t('mark_all_read')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </LinearGradient>
+
+      {/* Filter Tabs - Glassmorphic */}
+      <View style={styles.filterContainer}>
+        <LinearGradient
+          colors={
+            filter === 'all'
+              ? [colors.accent[500], colors.accent[600]]
+              : ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[
+            styles.filterTabGradient,
+            {
+              borderColor:
+                filter === 'all'
+                  ? colors.accent[500]
+                  : 'rgba(255, 255, 255, 0.2)',
+            },
+          ]}
+        >
           <TouchableOpacity
-            style={styles.markAllButton}
-            onPress={markAllAsRead}
+            style={styles.filterTab}
+            onPress={() => setFilter('all')}
             activeOpacity={0.7}
           >
-            <Text style={styles.markAllText}>{t('mark_all_read')}</Text>
+            <Text 
+              style={[
+                styles.filterText,
+                filter === 'all' && styles.activeFilterText,
+              ]}
+            >
+              {t('all')} ({notifications.length})
+            </Text>
           </TouchableOpacity>
-        )}
-      </View>
+        </LinearGradient>
 
-      {/* Filter Tabs */}
-      <View style={styles.filterContainer}>
-        <TouchableOpacity
-          style={[styles.filterTab, filter === 'all' && styles.activeFilterTab]}
-          onPress={() => setFilter('all')}
-          activeOpacity={0.7}
+        <LinearGradient
+          colors={
+            filter === 'unread'
+              ? [colors.highlight[500], colors.highlight[600]]
+              : ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[
+            styles.filterTabGradient,
+            {
+              borderColor:
+                filter === 'unread'
+                  ? colors.highlight[500]
+                  : 'rgba(255, 255, 255, 0.2)',
+            },
+          ]}
         >
-          <Text style={[styles.filterText, filter === 'all' && styles.activeFilterText]}>
-            {t('all')} ({notifications.length})
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.filterTab, filter === 'unread' && styles.activeFilterTab]}
-          onPress={() => setFilter('unread')}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.filterText, filter === 'unread' && styles.activeFilterText]}>
-            {t('unread')} ({unreadCount})
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.filterTab}
+            onPress={() => setFilter('unread')}
+            activeOpacity={0.7}
+          >
+            <Text 
+              style={[
+                styles.filterText,
+                filter === 'unread' && styles.activeFilterText,
+              ]}
+            >
+              {t('unread')} ({unreadCount})
+            </Text>
+          </TouchableOpacity>
+        </LinearGradient>
       </View>
 
       {/* Notifications List */}
@@ -245,7 +325,10 @@ export const NotificationsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.primary[500],
+  },
+  headerGradient: {
+    paddingBottom: spacing.lg,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -253,65 +336,64 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    backgroundColor: colors.background.primary,
   },
   screenTitle: {
     fontSize: typography.fontSize['2xl'],
     fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
+    color: colors.neutral.white,
   },
   markAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
   markAllText: {
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
-    color: colors.primary[500],
+    color: colors.accent[500],
   },
   filterContainer: {
     flexDirection: 'row',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.background.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.neutral[200],
+    paddingVertical: spacing.md,
+    gap: spacing.md,
+  },
+  filterTabGradient: {
+    flex: 1,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    overflow: 'hidden',
   },
   filterTab: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    marginRight: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  activeFilterTab: {
-    backgroundColor: colors.primary[50],
+    paddingVertical: spacing.md,
+    alignItems: 'center',
   },
   filterText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.text.secondary,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.neutral[300],
   },
   activeFilterText: {
-    color: colors.primary[600],
-    fontWeight: typography.fontWeight.semibold,
+    color: colors.neutral.white,
   },
   listContent: {
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    paddingBottom: spacing['3xl'],
+    gap: spacing.md,
     flexGrow: 1,
+  },
+  notificationCardGradient: {
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    overflow: 'hidden',
   },
   notificationCard: {
     flexDirection: 'row',
-    backgroundColor: colors.background.primary,
-    marginHorizontal: spacing.lg,
-    marginVertical: spacing.xs,
     padding: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.neutral[200],
-  },
-  unreadCard: {
-    backgroundColor: colors.accent[50],
-    borderColor: colors.accent[200],
   },
   iconContainer: {
     width: 48,
@@ -333,7 +415,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
+    color: colors.neutral.white,
   },
   unreadDot: {
     width: 8,
@@ -344,13 +426,13 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.neutral[200],
     marginBottom: spacing.xs,
-    lineHeight: typography.fontSize.sm * typography.lineHeight.normal,
+    lineHeight: typography.fontSize.sm * 1.5,
     textAlign: 'left',
   },
   timestamp: {
     fontSize: typography.fontSize.xs,
-    color: colors.text.tertiary,
+    color: colors.neutral[300],
   },
 });

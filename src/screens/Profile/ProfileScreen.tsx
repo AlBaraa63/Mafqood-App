@@ -1,6 +1,6 @@
 /**
- * Profile Screen
- * Modern profile & settings hub
+ * Profile Screen - Cyber-Luxe Edition
+ * Modern profile & settings hub with glassmorphism
  */
 
 import React from 'react';
@@ -13,6 +13,7 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  LinearGradient,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -96,16 +97,22 @@ export const ProfileScreen: React.FC = () => {
       icon: 'pencil-outline',
       labelKey: 'edit_profile',
       onPress: () => navigation.navigate('EditProfile'),
+      iconColor: colors.accent[500],
+      iconBackground: `${colors.accent[500]}20`,
     },
     {
       icon: 'clipboard-text-outline',
       labelKey: 'my_reports',
       onPress: () => navigation.navigate('MyReports'),
+      iconColor: colors.highlight[500],
+      iconBackground: `${colors.highlight[500]}20`,
     },
     {
       icon: 'web',
       labelKey: 'about_app',
       onPress: () => navigation.navigate('About'),
+      iconColor: colors.primary[400],
+      iconBackground: `${colors.primary[400]}20`,
     },
     {
       icon: 'delete-forever-outline',
@@ -122,35 +129,57 @@ export const ProfileScreen: React.FC = () => {
   if (isGuest) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <ScrollView contentContainerStyle={styles.guestContent}>
-          <View style={styles.guestHeader}>
-            <MaterialCommunityIcons name="account-off-outline" size={48} color={colors.primary[500]} />
-            <Text style={styles.guestTitle}>{t('guest_mode_limited')}</Text>
-            <Text style={styles.guestSubtitle}>{t('guest_cannot_report')}</Text>
-          </View>
-          
-          <Button
-            title={t('create_account')}
-            onPress={() => {}}
-            fullWidth
-          />
-          
-          <Button
-            title={t('login')}
-            onPress={() => {}}
-            variant="outline"
-            fullWidth
-            style={styles.loginButton}
-          />
-          
-          <TouchableOpacity style={styles.guestLanguage} onPress={handleLanguageToggle}>
-            <MaterialCommunityIcons name="earth" size={18} color={colors.text.secondary} />
-            <Text style={styles.guestLanguageText}>{t('language')}</Text>
-            <Text style={styles.guestLanguageValue}>
-              {language === 'en' ? 'English' : 'العربية'}
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+        <LinearGradient
+          colors={[colors.primary[500], colors.primary[600]]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.guestBackground}
+        >
+          <ScrollView contentContainerStyle={styles.guestContent}>
+            <View style={styles.guestHeader}>
+              <View style={styles.guestIconBox}>
+                <MaterialCommunityIcons 
+                  name="account-off-outline" 
+                  size={48} 
+                  color={colors.accent[500]} 
+                />
+              </View>
+              <Text style={styles.guestTitle}>{t('guest_mode_limited')}</Text>
+              <Text style={styles.guestSubtitle}>{t('guest_cannot_report')}</Text>
+            </View>
+            
+            <Button
+              title={t('create_account')}
+              onPress={() => {}}
+              fullWidth
+            />
+            
+            <Button
+              title={t('login')}
+              onPress={() => {}}
+              variant="outline"
+              fullWidth
+              style={styles.loginButton}
+            />
+            
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.guestLanguage, { borderColor: `${colors.accent[500]}40` }]}
+            >
+              <MaterialCommunityIcons 
+                name="earth" 
+                size={18} 
+                color={colors.accent[500]} 
+              />
+              <Text style={styles.guestLanguageText}>{t('language')}</Text>
+              <Text style={styles.guestLanguageValue}>
+                {language === 'en' ? 'English' : 'العربية'}
+              </Text>
+            </LinearGradient>
+          </ScrollView>
+        </LinearGradient>
       </SafeAreaView>
     );
   }
@@ -158,74 +187,129 @@ export const ProfileScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Profile Header */}
-        <Card style={styles.profileCard} variant="elevated">
-          <View style={styles.headerRow}>
-            <View style={styles.avatarContainer}>
-              {user?.avatarUrl ? (
-                <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
-              ) : (
-                <View style={styles.avatarPlaceholder}>
-                  <Text style={styles.avatarInitial}>
-                    {user?.fullName?.charAt(0).toUpperCase() || '?'}
-                  </Text>
-                </View>
-              )}
-            </View>
-            <View style={styles.headerText}>
-              <Text style={styles.userName}>{user?.fullName}</Text>
-              <Text style={styles.userEmail}>{user?.email}</Text>
-              {user?.phone && <Text style={styles.userPhone}>{user.phone}</Text>}
-            </View>
-            <View style={styles.languagePill}>
-              <MaterialCommunityIcons name="earth" size={16} color={colors.accent[600]} />
-              <Text style={styles.languageValue}>{language === 'en' ? 'EN' : 'AR'}</Text>
+        {/* Profile Header - Glassmorphic */}
+        <LinearGradient
+          colors={['rgba(255, 255, 255, 0.15)', 'rgba(255, 255, 255, 0.05)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.profileCardGradient, shadows.lg]}
+        >
+          <View style={styles.profileCard}>
+            <View style={styles.headerRow}>
+              <View style={styles.avatarContainer}>
+                {user?.avatarUrl ? (
+                  <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
+                ) : (
+                  <LinearGradient
+                    colors={[colors.accent[500], colors.accent[600]]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.avatarPlaceholder}
+                  >
+                    <Text style={styles.avatarInitial}>
+                      {user?.fullName?.charAt(0).toUpperCase() || '?'}
+                    </Text>
+                  </LinearGradient>
+                )}
+              </View>
+              <View style={styles.headerText}>
+                <Text style={styles.userName}>{user?.fullName}</Text>
+                <Text style={styles.userEmail}>{user?.email}</Text>
+                {user?.phone && <Text style={styles.userPhone}>{user.phone}</Text>}
+              </View>
+              <LinearGradient
+                colors={['rgba(40, 179, 163, 0.3)', 'rgba(40, 179, 163, 0.1)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.languagePill, { borderColor: `${colors.accent[500]}40` }]}
+              >
+                <MaterialCommunityIcons 
+                  name="earth" 
+                  size={16} 
+                  color={colors.accent[500]} 
+                />
+                <Text style={styles.languageValue}>{language === 'en' ? 'EN' : 'AR'}</Text>
+              </LinearGradient>
             </View>
           </View>
-        </Card>
+        </LinearGradient>
         
-        {/* Menu Items */}
-        <Card style={styles.menuCard} variant="outlined">
-          {menuItems.map((item, index) => (
-            <TouchableOpacity
-              key={item.labelKey}
-              style={[
-                styles.menuItem,
-                index < menuItems.length - 1 && styles.menuItemBorder,
-                item.disabled && styles.menuItemDisabled,
-              ]}
-              onPress={item.onPress}
-              activeOpacity={0.8}
-              disabled={item.disabled}
-            >
-              <View
+        {/* Menu Items - Glassmorphic */}
+        <LinearGradient
+          colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.menuCardGradient, shadows.md]}
+        >
+          <View style={styles.menuCard}>
+            {menuItems.map((item, index) => (
+              <TouchableOpacity
+                key={item.labelKey}
                 style={[
-                  styles.menuIconBubble,
-                  item.iconBackground ? { backgroundColor: item.iconBackground } : null,
+                  styles.menuItem,
+                  index < menuItems.length - 1 && styles.menuItemBorder,
+                  item.disabled && styles.menuItemDisabled,
+                ]}
+                onPress={item.onPress}
+                activeOpacity={0.7}
+                disabled={item.disabled}
+              >
+                <View
+                  style={[
+                    styles.menuIconBubble,
+                    item.iconBackground ? { backgroundColor: item.iconBackground } : null,
+                  ]}
+                >
+                  <MaterialCommunityIcons 
+                    name={item.icon} 
+                    size={18} 
+                    color={item.iconColor || colors.accent[500]} 
+                  />
+                </View>
+                <Text style={[
+                  styles.menuLabel,
+                  item.labelColor ? { color: item.labelColor } : null,
+                ]}>
+                  {t(item.labelKey)}
+                </Text>
+                {item.rightContent}
+                <MaterialCommunityIcons 
+                  name="chevron-right" 
+                  size={18} 
+                  color={colors.neutral[300]} 
+                />
+              </TouchableOpacity>
+            ))}
+            {/* Language toggle */}
+            <TouchableOpacity 
+              style={styles.menuItem} 
+              onPress={handleLanguageToggle} 
+              activeOpacity={0.7}
+            >
+              <View 
+                style={[
+                  styles.menuIconBubble, 
+                  { backgroundColor: `${colors.accent[500]}20` }
                 ]}
               >
-                <MaterialCommunityIcons name={item.icon} size={18} color={item.iconColor || colors.primary[600]} />
+                <MaterialCommunityIcons 
+                  name="translate" 
+                  size={18} 
+                  color={colors.accent[500]} 
+                />
               </View>
-              <Text style={[
-                styles.menuLabel,
-                item.labelColor ? { color: item.labelColor } : null,
-              ]}>
-                {t(item.labelKey)}
+              <Text style={styles.menuLabel}>{t('language_settings')}</Text>
+              <Text style={styles.languageValueInline}>
+                {language === 'en' ? 'English' : 'العربية'}
               </Text>
-              {item.rightContent}
-              <MaterialCommunityIcons name="chevron-right" size={18} color={colors.text.tertiary} />
+              <MaterialCommunityIcons 
+                name="chevron-right" 
+                size={18} 
+                color={colors.neutral[300]} 
+              />
             </TouchableOpacity>
-          ))}
-          {/* Language toggle */}
-          <TouchableOpacity style={styles.menuItem} onPress={handleLanguageToggle} activeOpacity={0.8}>
-            <View style={[styles.menuIconBubble, { backgroundColor: colors.accent[50] }]}>
-              <MaterialCommunityIcons name="translate" size={18} color={colors.accent[600]} />
-            </View>
-            <Text style={styles.menuLabel}>{t('language_settings')}</Text>
-            <Text style={styles.languageValueInline}>{language === 'en' ? 'English' : 'العربية'}</Text>
-            <MaterialCommunityIcons name="chevron-right" size={18} color={colors.text.tertiary} />
-          </TouchableOpacity>
-        </Card>
+          </View>
+        </LinearGradient>
         
         {/* Logout Button */}
         <Button
@@ -234,7 +318,7 @@ export const ProfileScreen: React.FC = () => {
           variant="outline"
           fullWidth
           style={styles.logoutButton}
-          icon={<MaterialCommunityIcons name="logout" size={18} color={colors.primary[500]} />}
+          icon={<MaterialCommunityIcons name="logout" size={18} color={colors.highlight[500]} />}
         />
         
         {/* App Version */}
@@ -247,11 +331,15 @@ export const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.primary[500],
   },
   content: {
     padding: spacing.lg,
     gap: spacing.lg,
+    paddingBottom: spacing['3xl'],
+  },
+  guestBackground: {
+    flex: 1,
   },
   guestContent: {
     flex: 1,
@@ -261,17 +349,27 @@ const styles = StyleSheet.create({
   },
   guestHeader: {
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.md,
+  },
+  guestIconBox: {
+    width: 80,
+    height: 80,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   guestTitle: {
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
+    color: colors.neutral.white,
     textAlign: 'center',
   },
   guestSubtitle: {
     fontSize: typography.fontSize.md,
-    color: colors.text.secondary,
+    color: colors.neutral[100],
     textAlign: 'center',
   },
   loginButton: {
@@ -281,16 +379,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
+    gap: spacing.md,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
   },
   guestLanguageText: {
     fontSize: typography.fontSize.md,
-    color: colors.text.primary,
+    color: colors.neutral.white,
   },
   guestLanguageValue: {
     fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.primary[500],
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.accent[500],
+  },
+  profileCardGradient: {
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    overflow: 'hidden',
   },
   profileCard: {
     padding: spacing.lg,
@@ -315,45 +422,50 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary[100],
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarInitial: {
     fontSize: 30,
     fontWeight: typography.fontWeight.bold,
-    color: colors.primary[600],
+    color: colors.neutral.white,
   },
   headerText: {
     flex: 1,
     gap: spacing.xs,
   },
   userName: {
-    fontSize: typography.fontSize.xl,
+    fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
+    color: colors.neutral.white,
   },
   userEmail: {
-    fontSize: typography.fontSize.md,
-    color: colors.text.secondary,
+    fontSize: typography.fontSize.sm,
+    color: colors.neutral[200],
   },
   userPhone: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.tertiary,
+    fontSize: typography.fontSize.xs,
+    color: colors.neutral[300],
   },
   languagePill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    backgroundColor: colors.accent[50],
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.full,
+    borderWidth: 1,
   },
   languageValue: {
-    fontSize: typography.fontSize.sm,
-    color: colors.accent[700],
+    fontSize: typography.fontSize.xs,
+    color: colors.accent[500],
     fontWeight: typography.fontWeight.semibold,
+  },
+  menuCardGradient: {
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    overflow: 'hidden',
   },
   menuCard: {
     paddingHorizontal: 0,
@@ -368,7 +480,7 @@ const styles = StyleSheet.create({
   },
   menuItemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: colors.neutral[200],
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   menuItemDisabled: {
     opacity: 0.6,
@@ -377,27 +489,27 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.neutral[100],
     alignItems: 'center',
     justifyContent: 'center',
   },
   menuLabel: {
     flex: 1,
     fontSize: typography.fontSize.md,
-    color: colors.text.primary,
+    color: colors.neutral.white,
+    fontWeight: typography.fontWeight.medium,
   },
   languageValueInline: {
     fontSize: typography.fontSize.sm,
-    color: colors.primary[500],
-    fontWeight: typography.fontWeight.medium,
+    color: colors.accent[500],
+    fontWeight: typography.fontWeight.semibold,
   },
   logoutButton: {
-    borderColor: colors.error.main,
+    borderColor: colors.highlight[500],
   },
   version: {
     textAlign: 'center',
     fontSize: typography.fontSize.sm,
-    color: colors.text.tertiary,
+    color: colors.neutral[300],
     marginTop: spacing.xl,
   },
 });
