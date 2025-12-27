@@ -1,6 +1,7 @@
 /**
- * Report Photo Screen
+ * Report Photo Screen - Cyber-Luxe Edition
  * Step 2: Upload or take a photo of the item
+ * Enhanced with glassmorphism and dynamic animations
  */
 
 import React, { useState } from 'react';
@@ -11,16 +12,19 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  LinearGradient,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Card, Stepper } from '../../components/common';
 import { useTranslation } from '../../hooks';
 import { useReportFormStore } from '../../hooks/useStore';
 import { ReportStackParamList, ItemType } from '../../types';
-import { colors, typography, spacing, borderRadius } from '../../theme';
+import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
 
 type NavigationProp = NativeStackNavigationProp<ReportStackParamList, 'ReportPhoto'>;
 type RouteProps = RouteProp<ReportStackParamList, 'ReportPhoto'>;
@@ -34,6 +38,7 @@ export const ReportPhotoScreen: React.FC = () => {
   
   const [imageUri, setImageUri] = useState<string | undefined>(formData.imageUri);
   const [confirmed, setConfirmed] = useState(formData.imageConfirmed);
+  const [uploadAnim] = useState(new Animated.Value(0));
   
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -57,6 +62,12 @@ export const ReportPhotoScreen: React.FC = () => {
     
     if (!result.canceled && result.assets[0]) {
       setImageUri(result.assets[0].uri);
+      // Trigger animation
+      Animated.timing(uploadAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
     }
   };
   
@@ -76,12 +87,23 @@ export const ReportPhotoScreen: React.FC = () => {
     
     if (!result.canceled && result.assets[0]) {
       setImageUri(result.assets[0].uri);
+      // Trigger animation
+      Animated.timing(uploadAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
     }
   };
   
   const handleRemovePhoto = () => {
     setImageUri(undefined);
     setConfirmed(false);
+    Animated.timing(uploadAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
   };
   
   const handleNext = () => {
@@ -103,72 +125,174 @@ export const ReportPhotoScreen: React.FC = () => {
     ? t('report_photo_lost_subtitle')
     : t('report_photo_found_subtitle');
   
+  const previewScale = uploadAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.8, 1],
+  });
+
+  const previewOpacity = uploadAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+  
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <View style={styles.content}>
-        <Stepper currentStep={2} totalSteps={6} />
-        
-        <View style={styles.header}>
-          <Text style={styles.title}>{t('report_photo_title')}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
-        </View>
-        
-        {/* Image Preview or Upload Buttons */}
-        {imageUri ? (
-          <View style={styles.previewContainer}>
-            <Image source={{ uri: imageUri }} style={styles.preview} />
-            <TouchableOpacity style={styles.removeButton} onPress={handleRemovePhoto}>
-              <Text style={styles.removeButtonText}>{t('remove_photo')}</Text>
-            </TouchableOpacity>
+      <LinearGradient
+        colors={[colors.primary[500], colors.primary[600]]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.background}
+      >
+        <View style={styles.content}>
+          <Stepper currentStep={2} totalSteps={6} />
+          
+          <View style={styles.header}>
+            <Text style={styles.title}>{t('report_photo_title')}</Text>
+            <Text style={styles.subtitle}>{subtitle}</Text>
           </View>
-        ) : (
-          <View style={styles.uploadButtons}>
-            <Card style={styles.uploadCard} onPress={handleTakePhoto}>
-              <Text style={styles.uploadIcon}>📷</Text>
-              <Text style={styles.uploadText}>{t('take_photo')}</Text>
-            </Card>
-            
-            <Card style={styles.uploadCard} onPress={handleChooseFromGallery}>
-              <Text style={styles.uploadIcon}>🖼️</Text>
-              <Text style={styles.uploadText}>{t('choose_from_gallery')}</Text>
-            </Card>
+          
+          {/* Image Preview or Upload Buttons */}
+          {imageUri ? (
+            <Animated.View 
+              style={[
+                styles.previewContainer,
+                {
+                  transform: [{ scale: previewScale }],
+                  opacity: previewOpacity,
+                },
+              ]}
+            >
+              <LinearGradient
+                colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.previewWrapper, shadows.lg]}
+              >
+                <Image source={{ uri: imageUri }} style={styles.preview} />
+                <View style={styles.previewOverlay}>
+                  <MaterialCommunityIcons
+                    name="check-circle"
+                    size={48}
+                    color={colors.accent[500]}
+                  />
+                  <Text style={styles.previewText}>Image Ready</Text>
+                </View>
+              </LinearGradient>
+              
+              <TouchableOpacity 
+                style={styles.removeButton} 
+                onPress={handleRemovePhoto}
+                activeOpacity={0.7}
+              >
+                <MaterialCommunityIcons
+                  name="close-circle"
+                  size={24}
+                  color={colors.highlight[500]}
+                />
+                <Text style={styles.removeButtonText}>{t('remove_photo')}</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          ) : (
+            <View style={styles.uploadButtons}>
+              <LinearGradient
+                colors={['rgba(40, 179, 163, 0.15)', 'rgba(40, 179, 163, 0.05)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.uploadCard, styles.uploadCardCamera]}
+              >
+                <TouchableOpacity 
+                  style={styles.uploadCardContent}
+                  onPress={handleTakePhoto}
+                  activeOpacity={0.7}
+                >
+                  <MaterialCommunityIcons
+                    name="camera"
+                    size={40}
+                    color={colors.accent[500]}
+                  />
+                  <Text style={styles.uploadText}>{t('take_photo')}</Text>
+                </TouchableOpacity>
+              </LinearGradient>
+              
+              <LinearGradient
+                colors={['rgba(209, 139, 30, 0.15)', 'rgba(209, 139, 30, 0.05)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.uploadCard, styles.uploadCardGallery]}
+              >
+                <TouchableOpacity 
+                  style={styles.uploadCardContent}
+                  onPress={handleChooseFromGallery}
+                  activeOpacity={0.7}
+                >
+                  <MaterialCommunityIcons
+                    name="image-multiple"
+                    size={40}
+                    color={colors.highlight[500]}
+                  />
+                  <Text style={styles.uploadText}>{t('choose_from_gallery')}</Text>
+                </TouchableOpacity>
+              </LinearGradient>
+            </View>
+          )}
+          
+          {/* Privacy Note - Glassmorphic */}
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.privacyNote, { borderColor: `${colors.accent[500]}40` }]}
+          >
+            <MaterialCommunityIcons
+              name="shield-check"
+              size={20}
+              color={colors.accent[500]}
+            />
+            <Text style={styles.privacyText}>{t('photo_privacy_note')}</Text>
+          </LinearGradient>
+          
+          {/* Confirmation Checkbox - Enhanced */}
+          <TouchableOpacity
+            style={styles.checkboxContainer}
+            onPress={() => setConfirmed(!confirmed)}
+            activeOpacity={0.7}
+          >
+            <LinearGradient
+              colors={confirmed ? [colors.accent[500], colors.accent[600]] : ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[
+                styles.checkbox,
+                { borderColor: confirmed ? colors.accent[500] : 'rgba(255, 255, 255, 0.3)' },
+              ]}
+            >
+              {confirmed && (
+                <MaterialCommunityIcons
+                  name="check"
+                  size={16}
+                  color={colors.neutral.white}
+                />
+              )}
+            </LinearGradient>
+            <Text style={styles.checkboxLabel}>{t('photo_confirm_checkbox')}</Text>
+          </TouchableOpacity>
+          
+          {/* Navigation Buttons */}
+          <View style={styles.footer}>
+            <Button
+              title={t('back')}
+              onPress={() => navigation.goBack()}
+              variant="outline"
+              style={styles.backButton}
+            />
+            <Button
+              title={t('next')}
+              onPress={handleNext}
+              style={styles.nextButton}
+            />
           </View>
-        )}
-        
-        {/* Privacy Note */}
-        <View style={styles.privacyNote}>
-          <Text style={styles.privacyIcon}>🔒</Text>
-          <Text style={styles.privacyText}>{t('photo_privacy_note')}</Text>
         </View>
-        
-        {/* Confirmation Checkbox */}
-        <TouchableOpacity
-          style={styles.checkboxContainer}
-          onPress={() => setConfirmed(!confirmed)}
-        >
-          <View style={[styles.checkbox, confirmed && styles.checkboxChecked]}>
-            {confirmed && <Text style={styles.checkmark}>✓</Text>}
-          </View>
-          <Text style={styles.checkboxLabel}>{t('photo_confirm_checkbox')}</Text>
-        </TouchableOpacity>
-        
-        {/* TODO: Connect to backend endpoint for image upload and optional blurring */}
-        
-        {/* Navigation Buttons */}
-        <View style={styles.footer}>
-          <Button
-            title={t('back')}
-            onPress={() => navigation.goBack()}
-            variant="outline"
-            style={styles.backButton}
-          />
-          <Button
-            title={t('next')}
-            onPress={handleNext}
-            style={styles.nextButton}
-          />
-        </View>
-      </View>
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -176,7 +300,9 @@ export const ReportPhotoScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+  },
+  background: {
+    flex: 1,
   },
   content: {
     flex: 1,
@@ -188,12 +314,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
+    color: colors.neutral.white,
     marginBottom: spacing.sm,
   },
   subtitle: {
     fontSize: typography.fontSize.md,
-    color: colors.text.secondary,
+    color: colors.neutral[100],
     textAlign: 'left',
   },
   uploadButtons: {
@@ -203,58 +329,84 @@ const styles = StyleSheet.create({
   },
   uploadCard: {
     flex: 1,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1.5,
+    overflow: 'hidden',
+  },
+  uploadCardCamera: {
+    borderColor: `${colors.accent[500]}40`,
+  },
+  uploadCardGallery: {
+    borderColor: `${colors.highlight[500]}40`,
+  },
+  uploadCardContent: {
     alignItems: 'center',
     paddingVertical: spacing['2xl'],
-    backgroundColor: colors.neutral[50],
-    borderWidth: 2,
-    borderColor: colors.neutral[200],
-    borderStyle: 'dashed',
-  },
-  uploadIcon: {
-    fontSize: 40,
-    marginBottom: spacing.sm,
+    gap: spacing.md,
   },
   uploadText: {
     fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.text.primary,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.neutral.white,
   },
   previewContainer: {
     marginBottom: spacing.xl,
     alignItems: 'center',
+    gap: spacing.md,
+  },
+  previewWrapper: {
+    width: '100%',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    overflow: 'hidden',
   },
   preview: {
     width: '100%',
     height: 250,
-    borderRadius: borderRadius.lg,
     backgroundColor: colors.neutral[200],
   },
+  previewOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    gap: spacing.md,
+  },
+  previewText: {
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.neutral.white,
+  },
   removeButton: {
-    marginTop: spacing.md,
-    paddingVertical: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
   },
   removeButtonText: {
     fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.error.main,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.highlight[500],
   },
   privacyNote: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: colors.info.light,
     padding: spacing.md,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
-  },
-  privacyIcon: {
-    fontSize: 20,
-    marginRight: spacing.sm,
+    borderWidth: 1,
+    gap: spacing.md,
   },
   privacyText: {
     flex: 1,
     fontSize: typography.fontSize.sm,
-    color: colors.info.dark,
+    color: colors.neutral[100],
     lineHeight: 20,
     textAlign: 'left',
   },
@@ -262,32 +414,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: spacing.xl,
+    gap: spacing.md,
   },
   checkbox: {
     width: 24,
     height: 24,
     borderRadius: borderRadius.sm,
     borderWidth: 2,
-    borderColor: colors.neutral[300],
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.sm,
     marginTop: 2,
-  },
-  checkboxChecked: {
-    backgroundColor: colors.primary[500],
-    borderColor: colors.primary[500],
-  },
-  checkmark: {
-    color: colors.neutral.white,
-    fontWeight: typography.fontWeight.bold,
-    fontSize: 14,
   },
   checkboxLabel: {
     flex: 1,
     fontSize: typography.fontSize.sm,
-    color: colors.text.primary,
+    color: colors.neutral.white,
     lineHeight: 20,
+    marginTop: 2,
   },
   footer: {
     flexDirection: 'row',

@@ -1,6 +1,6 @@
 /**
- * Matches List Screen
- * Modern, on-brand list of AI matches
+ * Matches List Screen - Cyber-Luxe Edition
+ * Modern, on-brand list of AI matches with glassmorphism
  */
 
 import React, { useState, useEffect } from 'react';
@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
+  LinearGradient,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -82,78 +83,117 @@ export const MatchesListScreen: React.FC = () => {
     const topMatch = hasMatches ? matches[0] : null;
     
     return (
-      <Card style={styles.matchCard} variant="elevated">
-        <View style={[styles.cardHeader, isRTL && styles.rtl]}>
-          <TypeChip
-            type={item.type}
-            label={item.type === 'lost' ? t('lost_item') : t('found_item')}
-          />
-          <Text style={[styles.metaText, isRTL && styles.textRight]}>{formatRelative(item.createdAt)}</Text>
-        </View>
-
-        <View style={[styles.cardBody, isRTL && styles.rtl]}>
-          <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
-          <View style={styles.itemInfo}>
-            <Text style={[styles.itemTitle, isRTL && styles.textRight]} numberOfLines={2}>
-              {item.title}
+      <LinearGradient
+        colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.matchCardGradient, shadows.md]}
+      >
+        <View style={styles.matchCard}>
+          <View style={[styles.cardHeader, isRTL && styles.rtl]}>
+            <TypeChip
+              type={item.type}
+              label={item.type === 'lost' ? t('lost_item') : t('found_item')}
+            />
+            <Text style={[styles.metaText, isRTL && styles.textRight]}>
+              {formatRelative(item.createdAt)}
             </Text>
-            <View style={[styles.itemRow, isRTL && styles.rtl]}>
-              <MaterialCommunityIcons name="map-marker-radius" size={16} color={colors.accent[600]} />
-              <Text style={[styles.itemLocation, isRTL && styles.textRight]} numberOfLines={1}>
-                {item.location}
-              </Text>
-            </View>
-            {topMatch && (
-              <View style={styles.confidenceRow}>
-                <ConfidenceBadge
-                  confidence={topMatch.confidence}
-                  label={getConfidenceLabel(topMatch.confidence)}
-                  percentage={topMatch.similarity}
-                />
-              </View>
-            )}
           </View>
-        </View>
 
-        {hasMatches ? (
-          <View style={styles.matchList}>
-            {matches.slice(0, 3).map((match) => (
-              <TouchableOpacity
-                key={match.id}
-                style={[styles.matchItem, isRTL && styles.rtl]}
-                onPress={() => navigation.navigate('MatchDetail', { matchId: match.id })}
-                activeOpacity={0.8}
-              >
-                <Image
-                  source={{ uri: match.matchedItem.imageUrl }}
-                  style={styles.matchImage}
-                />
-                <View style={styles.matchDetails}>
-                  <Text style={[styles.matchTitle, isRTL && styles.textRight]} numberOfLines={1}>{match.matchedItem.title}</Text>
-                  <Text style={[styles.matchMeta, isRTL && styles.textRight]} numberOfLines={1}>
-                    {match.matchedItem.location}
-                  </Text>
-                </View>
-                <ConfidenceBadge
-                  confidence={match.confidence}
-                  label={getConfidenceLabel(match.confidence)}
-                  percentage={match.similarity}
-                />
-              </TouchableOpacity>
-            ))}
-            {matches.length > 3 && (
-              <Text style={[styles.moreText, isRTL && styles.textLeft]}>
-                {t('matches_more_count', { count: (matches.length - 3).toString() })}
+          <View style={[styles.cardBody, isRTL && styles.rtl]}>
+            <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+            <View style={styles.itemInfo}>
+              <Text style={[styles.itemTitle, isRTL && styles.textRight]} numberOfLines={2}>
+                {item.title}
               </Text>
-            )}
+              <View style={[styles.itemRow, isRTL && styles.rtl]}>
+                <MaterialCommunityIcons 
+                  name="map-marker-radius" 
+                  size={16} 
+                  color={colors.accent[500]} 
+                />
+                <Text style={[styles.itemLocation, isRTL && styles.textRight]} numberOfLines={1}>
+                  {item.location}
+                </Text>
+              </View>
+              {topMatch && (
+                <View style={styles.confidenceRow}>
+                  <ConfidenceBadge
+                    confidence={topMatch.confidence}
+                    label={getConfidenceLabel(topMatch.confidence)}
+                    percentage={topMatch.similarity}
+                  />
+                </View>
+              )}
+            </View>
           </View>
-        ) : (
-          <View style={[styles.noMatchesSection, isRTL && styles.rtl]}>
-            <MaterialCommunityIcons name="radar" size={18} color={colors.text.tertiary} />
-            <Text style={[styles.noMatchesText, isRTL && styles.textRight]}>{t('no_matches_desc')}</Text>
-          </View>
-        )}
-      </Card>
+
+          {hasMatches ? (
+            <View style={styles.matchList}>
+              {matches.slice(0, 3).map((match) => (
+                <LinearGradient
+                  key={match.id}
+                  colors={['rgba(40, 179, 163, 0.1)', 'rgba(40, 179, 163, 0.05)']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[styles.matchItemGradient, { borderColor: `${colors.accent[500]}30` }]}
+                >
+                  <TouchableOpacity
+                    style={[styles.matchItem, isRTL && styles.rtl]}
+                    onPress={() => navigation.navigate('MatchDetail', { matchId: match.id })}
+                    activeOpacity={0.8}
+                  >
+                    <Image
+                      source={{ uri: match.matchedItem.imageUrl }}
+                      style={styles.matchImage}
+                    />
+                    <View style={styles.matchDetails}>
+                      <Text 
+                        style={[styles.matchTitle, isRTL && styles.textRight]} 
+                        numberOfLines={1}
+                      >
+                        {match.matchedItem.title}
+                      </Text>
+                      <Text 
+                        style={[styles.matchMeta, isRTL && styles.textRight]} 
+                        numberOfLines={1}
+                      >
+                        {match.matchedItem.location}
+                      </Text>
+                    </View>
+                    <ConfidenceBadge
+                      confidence={match.confidence}
+                      label={getConfidenceLabel(match.confidence)}
+                      percentage={match.similarity}
+                    />
+                  </TouchableOpacity>
+                </LinearGradient>
+              ))}
+              {matches.length > 3 && (
+                <Text style={[styles.moreText, isRTL && styles.textLeft]}>
+                  {t('matches_more_count', { count: (matches.length - 3).toString() })}
+                </Text>
+              )}
+            </View>
+          ) : (
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.02)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.noMatchesSection, isRTL && styles.rtl]}
+            >
+              <MaterialCommunityIcons 
+                name="radar" 
+                size={18} 
+                color={colors.neutral[300]} 
+              />
+              <Text style={[styles.noMatchesText, isRTL && styles.textRight]}>
+                {t('no_matches_desc')}
+              </Text>
+            </LinearGradient>
+          )}
+        </View>
+      </LinearGradient>
     );
   };
   
@@ -162,10 +202,17 @@ export const MatchesListScreen: React.FC = () => {
   if (isGuest) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.header}>
-          <Text style={[styles.title, isRTL && styles.textRight]}>{t('matches_title')}</Text>
-          <Text style={[styles.subtitle, isRTL && styles.textRight]}>{t('matches_subtitle')}</Text>
-        </View>
+        <LinearGradient
+          colors={[colors.primary[500], colors.primary[600]]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.headerGradient}
+        >
+          <View style={styles.header}>
+            <Text style={[styles.title, isRTL && styles.textRight]}>{t('matches_title')}</Text>
+            <Text style={[styles.subtitle, isRTL && styles.textRight]}>{t('matches_subtitle')}</Text>
+          </View>
+        </LinearGradient>
         <EmptyState
           icon='dY"`'
           title={t('guest_cannot_match')}
@@ -178,10 +225,17 @@ export const MatchesListScreen: React.FC = () => {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.header}>
-          <Text style={[styles.title, isRTL && styles.textRight]}>{t('matches_title')}</Text>
-          <Text style={[styles.subtitle, isRTL && styles.textRight]}>{t('matches_subtitle')}</Text>
-        </View>
+        <LinearGradient
+          colors={[colors.primary[500], colors.primary[600]]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.headerGradient}
+        >
+          <View style={styles.header}>
+            <Text style={[styles.title, isRTL && styles.textRight]}>{t('matches_title')}</Text>
+            <Text style={[styles.subtitle, isRTL && styles.textRight]}>{t('matches_subtitle')}</Text>
+          </View>
+        </LinearGradient>
         <Loading text={t('loading')} />
       </SafeAreaView>
     );
@@ -189,32 +243,92 @@ export const MatchesListScreen: React.FC = () => {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <View>
-          <Text style={[styles.title, isRTL && styles.textRight]}>{t('matches_title')}</Text>
-          <Text style={[styles.subtitle, isRTL && styles.textRight]}>{t('matches_dashboard_subtitle')}</Text>
+      <LinearGradient
+        colors={[colors.primary[500], colors.primary[600]]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerGradient}
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={[styles.title, isRTL && styles.textRight]}>{t('matches_title')}</Text>
+            <Text style={[styles.subtitle, isRTL && styles.textRight]}>
+              {t('matches_dashboard_subtitle')}
+            </Text>
+          </View>
         </View>
-      </View>
+      </LinearGradient>
       
-      {/* Tabs */}
-      <View style={[styles.tabs, isRTL && styles.rtl]}>
+      {/* Tabs - Glassmorphic */}
+      <View style={[styles.tabsContainer, isRTL && styles.rtl]}>
         <TouchableOpacity
-          style={[styles.tab, isRTL && styles.rtl, activeTab === 'lost' && styles.tabActive]}
+          style={[
+            styles.tab,
+            isRTL && styles.rtl,
+            activeTab === 'lost' && styles.tabActive,
+          ]}
           onPress={() => setActiveTab('lost')}
+          activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="magnify" size={16} color={activeTab === 'lost' ? colors.neutral.white : colors.text.secondary} />
-          <Text style={[styles.tabText, activeTab === 'lost' && styles.tabTextActive]}>
-            {t('tab_lost_items')}
-          </Text>
+          <LinearGradient
+            colors={
+              activeTab === 'lost'
+                ? [colors.accent[500], colors.accent[600]]
+                : ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.tabGradient}
+          >
+            <MaterialCommunityIcons 
+              name="magnify" 
+              size={16} 
+              color={activeTab === 'lost' ? colors.neutral.white : colors.neutral[300]} 
+            />
+            <Text 
+              style={[
+                styles.tabText,
+                activeTab === 'lost' && styles.tabTextActive,
+              ]}
+            >
+              {t('tab_lost_items')}
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
+
         <TouchableOpacity
-          style={[styles.tab, isRTL && styles.rtl, activeTab === 'found' && styles.tabActive]}
+          style={[
+            styles.tab,
+            isRTL && styles.rtl,
+            activeTab === 'found' && styles.tabActive,
+          ]}
           onPress={() => setActiveTab('found')}
+          activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="package-variant-closed" size={16} color={activeTab === 'found' ? colors.neutral.white : colors.text.secondary} />
-          <Text style={[styles.tabText, activeTab === 'found' && styles.tabTextActive]}>
-            {t('tab_found_items')}
-          </Text>
+          <LinearGradient
+            colors={
+              activeTab === 'found'
+                ? [colors.highlight[500], colors.highlight[600]]
+                : ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.tabGradient}
+          >
+            <MaterialCommunityIcons 
+              name="package-variant-closed" 
+              size={16} 
+              color={activeTab === 'found' ? colors.neutral.white : colors.neutral[300]} 
+            />
+            <Text 
+              style={[
+                styles.tabText,
+                activeTab === 'found' && styles.tabTextActive,
+              ]}
+            >
+              {t('tab_found_items')}
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
       
@@ -247,22 +361,24 @@ export const MatchesListScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.primary[500],
+  },
+  headerGradient: {
+    paddingBottom: spacing.lg,
   },
   header: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.sm,
-    backgroundColor: colors.background.primary,
   },
   title: {
     fontSize: typography.fontSize['2xl'],
     fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
+    color: colors.neutral.white,
   },
   subtitle: {
     fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.neutral[100],
     marginTop: spacing.xs,
     textAlign: 'left',
   },
@@ -275,29 +391,33 @@ const styles = StyleSheet.create({
   textLeft: {
     textAlign: 'left',
   },
-  tabs: {
+  tabsContainer: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
   tab: {
     flex: 1,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    overflow: 'hidden',
+  },
+  tabActive: {
+    borderColor: 'transparent',
+  },
+  tabGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.neutral[100],
-  },
-  tabActive: {
-    backgroundColor: colors.primary[500],
+    paddingVertical: spacing.md,
   },
   tabText: {
     fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.text.secondary,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.neutral[300],
   },
   tabTextActive: {
     color: colors.neutral.white,
@@ -307,7 +427,14 @@ const styles = StyleSheet.create({
     paddingBottom: spacing['4xl'],
     gap: spacing.md,
   },
+  matchCardGradient: {
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    overflow: 'hidden',
+  },
   matchCard: {
+    padding: spacing.md,
     gap: spacing.md,
   },
   cardHeader: {
@@ -317,7 +444,7 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: typography.fontSize.sm,
-    color: colors.text.tertiary,
+    color: colors.neutral[300],
   },
   cardBody: {
     flexDirection: 'row',
@@ -326,7 +453,7 @@ const styles = StyleSheet.create({
   itemImage: {
     width: 88,
     height: 88,
-    borderRadius: borderRadius.xl,
+    borderRadius: borderRadius.lg,
     backgroundColor: colors.neutral[200],
   },
   itemInfo: {
@@ -336,7 +463,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
+    color: colors.neutral.white,
   },
   itemRow: {
     flexDirection: 'row',
@@ -345,21 +472,24 @@ const styles = StyleSheet.create({
   },
   itemLocation: {
     fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.neutral[300],
   },
   confidenceRow: {
     marginTop: spacing.xs,
   },
   matchList: {
-    gap: spacing.sm,
+    gap: spacing.md,
+  },
+  matchItemGradient: {
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    overflow: 'hidden',
   },
   matchItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.neutral[50],
+    gap: spacing.md,
+    padding: spacing.md,
   },
   matchImage: {
     width: 48,
@@ -374,28 +504,30 @@ const styles = StyleSheet.create({
   matchTitle: {
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
+    color: colors.neutral.white,
   },
   matchMeta: {
     fontSize: typography.fontSize.xs,
-    color: colors.text.secondary,
+    color: colors.neutral[300],
   },
   moreText: {
     fontSize: typography.fontSize.xs,
-    color: colors.text.tertiary,
+    color: colors.neutral[300],
     textAlign: 'right',
+    marginTop: spacing.sm,
   },
   noMatchesSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.neutral[50],
+    gap: spacing.md,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   noMatchesText: {
     fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.neutral[300],
     textAlign: 'left',
   },
 });
