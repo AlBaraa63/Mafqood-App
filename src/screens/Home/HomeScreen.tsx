@@ -1,99 +1,65 @@
 /**
- * Home Screen - Professional Lost and Found App
- * Enhanced with modern 2025 UI/UX trends and lost & found best practices
+ * Home Screen - Bento Grid Dashboard (2025)
+ * Premium, minimalist dashboard with AI-powered insights
+ * Optimized for all screen sizes with minimal scrolling
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
-  FlatList,
-  TouchableOpacity,
-  Image,
   RefreshControl,
-  Animated,
+  SafeAreaView,
+  Text,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Card, StatusChip, EmptyState, Loading, SectionHeader, TypeChip, Header } from '../../components/common';
-import { useTranslation, useFormatDate } from '../../hooks';
+
+import { Header } from '../../components/common/Header';
+import { HeroCard, StatusCard, QuickActionCard, RecentActivityCarousel } from '../../components/home';
 import { useAuthStore, useReportFormStore } from '../../hooks/useStore';
 import api from '../../api';
-import { Item, ItemType, MainTabParamList } from '../../types';
-import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
+import { Item, MainTabParamList } from '../../types';
+import { colors, spacing } from '../../theme';
 
 type NavigationProp = NativeStackNavigationProp<MainTabParamList>;
 
-interface HeroStat {
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  title: string;
-  subtitle: string;
-  color: string;
-}
-
-interface HighlightCard {
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  title: string;
-  desc: string;
-}
-
-export const HomeScreen: React.FC = () => {
-  const { t, isRTL } = useTranslation();
-  const { formatRelative } = useFormatDate();
+export const HomeScreenBento: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { isGuest, user } = useAuthStore();
   const { setType, resetForm } = useReportFormStore();
-  
+
   const [recentItems, setRecentItems] = useState<Item[]>([]);
+  const [activeReports, setActiveReports] = useState(0);
+  const [newMatches, setNewMatches] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
 
-  const heroStats: HeroStat[] = useMemo(() => ([
-    {
-      icon: 'clock-outline',
-      title: t('value_fast'),
-      subtitle: t('value_fast_desc'),
-      color: colors.accent[500],
-    },
-    {
-      icon: 'shield-check-outline',
-      title: t('value_trusted'),
-      subtitle: t('value_trusted_desc'),
-      color: colors.primary[500],
-    },
-    {
-      icon: 'cash-multiple',
-      title: t('value_free'),
-      subtitle: t('value_free_desc'),
-      color: colors.highlight[500],
-    },
-  ]), [t]);
-
-  const benefitCards: HighlightCard[] = useMemo(() => ([
-    { icon: 'auto-fix', title: t('value_ai'), desc: t('value_ai_desc') },
-    { icon: 'earth', title: t('value_citywide'), desc: t('value_citywide_desc') },
-    { icon: 'shield-check-outline', title: t('value_privacy'), desc: t('value_privacy_desc') },
-  ]), [t]);
-  
-  const valueCards = benefitCards;
-  
   const loadData = async () => {
     try {
       const response = await api.getMyItems();
       if (response.success && response.data) {
+        // Get all items and sort by creation date
         const allItems = [
           ...response.data.lostItems.map(g => g.item),
           ...response.data.foundItems.map(g => g.item),
-        ].sort((a, b) => 
+        ].sort((a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        ).slice(0, 5);
-        setRecentItems(allItems);
+        );
+
+        // Set recent items (limit to 5 for carousel)
+        setRecentItems(allItems.slice(0, 5));
+
+        // Calculate stats
+        const activeCount = allItems.filter(item => item.status === 'open').length;
+        const matchCount = allItems.filter(item => item.status === 'matched').length;
+
+        setActiveReports(activeCount);
+        setNewMatches(matchCount);
       }
     } catch (error) {
       console.error('Error loading items:', error);
@@ -102,102 +68,63 @@ export const HomeScreen: React.FC = () => {
       setIsRefreshing(false);
     }
   };
-  
-  // TODO: Implement notification fetching from API
-  const fetchNotifications = async () => {
-    try {
-      // const response = await api.getNotifications();
-      // if (response.success && response.data) {
-      //   setHasUnreadNotifications(response.data.hasUnread);
-      //   setNotificationCount(response.data.unreadCount);
-      // }
-    } catch (error) {
-      console.error('Error loading notifications:', error);
-    }
-  };
-  
+
   useEffect(() => {
     if (!isGuest) {
       loadData();
-      // TODO: Fetch notification data from API
-      // fetchNotifications();
     } else {
       setIsLoading(false);
     }
   }, [isGuest]);
-  
+
   const handleRefresh = () => {
     setIsRefreshing(true);
     loadData();
   };
-  
-  const startReport = (type: ItemType) => {
+
+  const handleReportLost = () => {
     resetForm();
-    setType(type);
+    setType('lost');
     navigation.navigate('ReportTab' as any, {
       screen: 'ReportPhoto',
-      params: { type },
+      params: { type: 'lost' },
     });
   };
-  
-  const handleReportLost = () => startReport('lost');
-  
-  const handleReportFound = () => startReport('found');
-  
+
+  const handleReportFound = () => {
+    resetForm();
+    setType('found');
+    navigation.navigate('ReportTab' as any, {
+      screen: 'ReportPhoto',
+      params: { type: 'found' },
+    });
+  };
+
   const handleProfilePress = () => {
     navigation.navigate('ProfileTab');
   };
-  
+
   const handleNotificationPress = () => {
-    // Navigate to notifications screen
     navigation.navigate('NotificationsTab');
     setHasUnreadNotifications(false);
     setNotificationCount(0);
   };
-  
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'open': return t('status_open');
-      case 'matched': return t('status_matched');
-      case 'closed': return t('status_closed');
-      default: return status;
-    }
+
+  const handleViewMatches = () => {
+    navigation.navigate('MatchesTab');
   };
-  
-  const renderRecentItem = ({ item }: { item: Item }) => (
-    <TouchableOpacity
-      style={[styles.recentItemCard, isRTL && styles.cardRtl]}
-      onPress={() => navigation.navigate('MatchesTab')}
-      activeOpacity={0.85}
-    >
-      <Image
-        source={{ uri: item.imageUrl }}
-        style={styles.recentItemImage}
-        resizeMode="cover"
-      />
-      <View style={styles.recentItemContent}>
-        <View style={[styles.recentItemHeader, isRTL && styles.rtl]}>
-          <TypeChip type={item.type} label={item.type === 'lost' ? t('lost_item') : t('found_item')} />
-          <StatusChip
-            status={item.status}
-            label={getStatusLabel(item.status)}
-            size="small"
-          />
-        </View>
-        <Text style={[styles.recentItemTitle, isRTL && styles.textRight]} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={[styles.recentItemLocation, isRTL && styles.textRight]} numberOfLines={1}>
-          {item.location}
-        </Text>
-        <Text style={[styles.recentItemMeta, isRTL && styles.textRight]}>{formatRelative(item.createdAt)}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-  
+
+  const handleViewReports = () => {
+    navigation.navigate('ProfileTab', { screen: 'MyReports' });
+  };
+
+  const handleItemPress = (item: Item) => {
+    navigation.navigate('MatchesTab', { screen: 'MatchDetail', params: { itemId: item.id } });
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header with Profile and Notifications */}
+      {/* Header */}
       <Header
         avatarUrl={user?.avatarUrl}
         userName={user?.fullName || 'Guest'}
@@ -206,160 +133,68 @@ export const HomeScreen: React.FC = () => {
         onProfilePress={handleProfilePress}
         onNotificationPress={handleNotificationPress}
       />
-      
+
+      {/* Main Content */}
       <ScrollView
         contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            colors={[colors.accent[500]]}
-            tintColor={colors.accent[500]}
+            colors={[colors.primary[500]]}
+            tintColor={colors.primary[500]}
           />
         }
       >
-        {/* Hero Section */}
-        <Card style={styles.heroCard} variant="elevated">
-          <View style={styles.heroBackdrop} />
-          <View style={styles.heroBackdropAccent} />
-          <View style={styles.heroContent}>
-            <View style={[styles.heroBadge, isRTL && styles.rtl]}>
-              <MaterialCommunityIcons name="auto-fix" size={18} color={colors.accent[600]} />
-              <Text style={styles.heroBadgeText}>{t('home_ai_badge')}</Text>
-            </View>
-            <Text style={[styles.heroTitle, isRTL && styles.textRight]}>{t('home_hero_title')}</Text>
-            <Text style={[styles.heroSubtitle, isRTL && styles.textRight]}>{t('home_hero_subtitle')}</Text>
-            <View style={[styles.ctaRow, isRTL && styles.rtl]}>
-              <Button
-                title={t('report_lost_item')}
-                onPress={handleReportLost}
-                variant="primary"
-                fullWidth
-                style={styles.primaryCta}
-                icon={<MaterialCommunityIcons name="alert-circle-outline" size={20} color={colors.neutral.white} />}
-              />
-              <Button
-                title={t('report_found_item')}
-                onPress={handleReportFound}
-                variant="secondary"
-                fullWidth
-                style={styles.secondaryCta}
-                icon={<MaterialCommunityIcons name="hand-heart" size={20} color={colors.neutral.white} />}
-              />
-            </View>
-            <View style={[styles.heroStatsRow, isRTL && styles.rtl]}>
-              {heroStats.map((stat) => (
-                <View key={stat.title} style={styles.heroStat}>
-                  <View style={[styles.heroStatIcon, { backgroundColor: `${stat.color}1A` }]}>
-                    <MaterialCommunityIcons name={stat.icon} size={18} color={stat.color} />
-                  </View>
-                  <Text style={[styles.heroStatTitle, isRTL && styles.textRight]}>{stat.title}</Text>
-                  <Text style={[styles.heroStatSubtitle, isRTL && styles.textRight]} numberOfLines={2}>{stat.subtitle}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </Card>
-        
-        {/* Quick Links */}
-        <View style={[styles.quickLinks, isRTL && styles.rtl]}>
-          <Card
-            style={StyleSheet.flatten([styles.quickLinkCard, isRTL && styles.cardRtl])}
-            variant="outlined"
-            onPress={() => navigation.navigate('MatchesTab')}
-          >
-            <View style={styles.quickLinkIconWrap}>
-              <MaterialCommunityIcons name="magnify-scan" size={22} color={colors.primary[500]} />
-            </View>
-            <View style={styles.quickLinkTextWrap}>
-              <Text style={[styles.quickLinkLabel, isRTL && styles.textRight]}>{t('view_matches')}</Text>
-              <Text style={[styles.quickLinkSub, isRTL && styles.textRight]} numberOfLines={1}>{t('matches_subtitle')}</Text>
-            </View>
-            <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.text.tertiary} />
-          </Card>
-          <Card
-            style={StyleSheet.flatten([styles.quickLinkCard, isRTL && styles.cardRtl])}
-            variant="outlined"
-            onPress={() => navigation.navigate('ProfileTab')}
-          >
-            <View style={[styles.quickLinkIconWrap, { backgroundColor: colors.highlight[50] }]}>
-              <MaterialCommunityIcons name="clipboard-list-outline" size={22} color={colors.highlight[500]} />
-            </View>
-            <View style={styles.quickLinkTextWrap}>
-              <Text style={[styles.quickLinkLabel, isRTL && styles.textRight]}>{t('my_reports')}</Text>
-              <Text style={[styles.quickLinkSub, isRTL && styles.textRight]} numberOfLines={1}>{t('home_reports_shortcut')}</Text>
-            </View>
-            <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.text.tertiary} />
-          </Card>
-        </View>
-        
-        {/* Recent Items (only for logged in users) */}
-        {!isGuest && (
-          <View style={styles.section}>
-            <SectionHeader title={t('recent_items')} actionLabel={t('view_matches')} onAction={() => navigation.navigate('MatchesTab')} />
-            {isLoading ? (
-              <Loading size="small" />
-            ) : recentItems.length > 0 ? (
-              <FlatList
-                data={recentItems}
-                renderItem={renderRecentItem}
-                keyExtractor={(item) => item.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                ItemSeparatorComponent={() => <View style={{ width: spacing.md }} />}
-                contentContainerStyle={[styles.recentItemsList, isRTL && styles.rtlList]}
-              />
-            ) : (
-              <Card style={styles.emptyRecentCard} variant="outlined">
-                <EmptyState
-                  icon='dY"-'
-                  title={t('no_recent_items')}
-                  description={t('home_empty_recent')}
-                />
-              </Card>
-            )}
-          </View>
-        )}
-        
-        {/* Guest Mode Banner */}
-        {isGuest && (
-          <Card style={styles.guestBanner} variant="outlined">
-            <View style={[styles.guestRow, isRTL && styles.rtl]}>
-              <View style={styles.guestIconBubble}>
-                <MaterialCommunityIcons name="account-off-outline" size={22} color={colors.primary[500]} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.guestBannerText, isRTL && styles.textRight]}>{t('guest_mode_limited')}</Text>
-                <Text style={[styles.guestBannerSub, isRTL && styles.textRight]}>{t('guest_cannot_report')}</Text>
-              </View>
-              <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.text.tertiary} />
-            </View>
-          </Card>
-        )}
-        
-        {/* Brand Pillars */}
+        {/* 1. Hero Card - Primary Actions */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>{t('home_pillars_title')}</Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.pillarsGrid}
-          >
-            {valueCards.map((card) => (
-              <Card
-                key={card.title}
-                style={StyleSheet.flatten([styles.pillarCard, isRTL && styles.cardRtl])}
-                variant="elevated"
-              >
-                <View style={styles.pillarIconBubble}>
-                  <MaterialCommunityIcons name={card.icon} size={22} color={colors.primary[500]} />
-                </View>
-                <Text style={[styles.pillarTitle, isRTL && styles.textRight]}>{card.title}</Text>
-                <Text style={[styles.pillarDesc, isRTL && styles.textRight]}>{card.desc}</Text>
-              </Card>
-            ))}
-          </ScrollView>
+          <HeroCard
+            onReportLost={handleReportLost}
+            onReportFound={handleReportFound}
+          />
         </View>
+
+        {/* 2. Status Card - Active Reports & Matches */}
+        <View style={styles.section}>
+          <StatusCard
+            activeReports={activeReports}
+            newMatches={newMatches}
+          />
+        </View>
+
+        {/* 3. Quick Action Cards - Secondary Navigation */}
+        <View style={styles.section}>
+          <QuickActionCard
+            onViewMatches={handleViewMatches}
+            onViewReports={handleViewReports}
+          />
+        </View>
+
+        {/* 4. Recent Activity Carousel - Horizontal Scroll */}
+        {recentItems.length > 0 && (
+          <View style={styles.carouselSection}>
+            <RecentActivityCarousel
+              items={recentItems}
+              onItemPress={handleItemPress}
+            />
+          </View>
+        )}
+
+        {/* 5. Empty State or Community Impact */}
+        {recentItems.length === 0 && !isLoading && (
+          <View style={styles.emptyState}>
+            <MaterialCommunityIcons
+              name="inbox-outline"
+              size={48}
+              color={colors.neutral[300]}
+            />
+            <Text style={styles.emptyStateTitle}>No Reports Yet</Text>
+            <Text style={styles.emptyStateSubtitle}>
+              Start by reporting a lost or found item
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -368,275 +203,35 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
   },
   scrollContent: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing['3xl'],
-    gap: spacing.xl,
+    paddingBottom: spacing['2xl'],
   },
-  rtl: {
-    flexDirection: 'row-reverse',
-  },
-  textRight: {
-    textAlign: 'right',
-  },
-
-  // Hero
-  heroCard: {
-    padding: spacing['2xl'],
-    backgroundColor: colors.neutral.white,
-    borderRadius: borderRadius['2xl'],
-    ...shadows.lg,
-    overflow: 'hidden',
-  },
-  heroBackdrop: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    backgroundColor: colors.primary[50],
-  },
-  heroBackdropAccent: {
-    position: 'absolute',
-    width: 220,
-    height: 220,
-    borderRadius: 140,
-    backgroundColor: colors.accent[100],
-    opacity: 0.35,
-    top: -80,
-    right: -60,
-    transform: [{ rotate: '25deg' }],
-  },
-  heroContent: {
-    gap: spacing.sm,
-    position: 'relative',
-  },
-  heroBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.accent[50],
-    borderRadius: borderRadius.full,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.md,
-  },
-  heroBadgeText: {
-    color: colors.accent[700],
-    fontWeight: typography.fontWeight.semibold,
-    fontSize: typography.fontSize.sm,
-  },
-  heroTitle: {
-    fontSize: typography.fontSize['3xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
-  },
-  heroSubtitle: {
-    fontSize: typography.fontSize.md,
-    color: colors.text.secondary,
-    lineHeight: 22,
-    marginBottom: spacing['2xl'],
-    textAlign: 'left',
-  },
-  ctaRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    flexWrap: 'wrap',
-    alignItems: 'stretch',
+  section: {
     marginBottom: spacing.lg,
   },
-  primaryCta: {
-    flex: 1,
+  carouselSection: {
+    marginHorizontal: -spacing.lg,
+    marginBottom: spacing.lg,
   },
-  secondaryCta: {
-    flex: 1,
-  },
-  heroStatsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  heroStat: {
-    flex: 1,
-    backgroundColor: colors.neutral[50],
-    borderRadius: borderRadius.xl,
-    padding: spacing.md,
-  },
-  heroStatIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.lg,
+  emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.sm,
+    paddingVertical: spacing['3xl'],
+    gap: spacing.md,
   },
-  heroStatTitle: {
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.bold,
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
     color: colors.text.primary,
   },
-  heroStatSubtitle: {
-    marginTop: spacing.xs,
-    fontSize: 10,
+  emptyStateSubtitle: {
+    fontSize: 14,
     color: colors.text.tertiary,
-    textAlign: 'left',
-  },
-
-  // Quick Links
-  quickLinks: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  quickLinkCard: {
-    flex: 1,
-    padding: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  quickLinkIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.accent[50],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickLinkTextWrap: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  quickLinkLabel: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-  },
-  quickLinkSub: {
-    fontSize: typography.fontSize.xs,
-    color: colors.text.secondary,
-    textAlign: 'left',
-  },
-
-  // Section
-  section: {
-    gap: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: typography.fontSize['2xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
-  },
-  
-  // Recent Items
-  recentItemsList: {
-    paddingVertical: spacing.sm,
-  },
-  rtlList: {
-    flexDirection: 'row-reverse',
-  },
-  recentItemCard: {
-    width: 220,
-    backgroundColor: colors.neutral.white,
-    borderRadius: borderRadius['2xl'],
-    overflow: 'hidden',
-    ...shadows.md,
-  },
-  cardRtl: {
-    writingDirection: 'rtl',
-  },
-  recentItemImage: {
-    width: '100%',
-    height: 140,
-    backgroundColor: colors.neutral[200],
-  },
-  recentItemContent: {
-    padding: spacing.md,
-    gap: spacing.xs,
-  },
-  recentItemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  recentItemTitle: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-  },
-  recentItemLocation: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
-  },
-  recentItemMeta: {
-    fontSize: typography.fontSize.xs,
-    color: colors.text.tertiary,
-  },
-  emptyRecentCard: {
-    backgroundColor: colors.neutral.white,
-  },
-  
-  // Guest Banner
-  guestBanner: {
-    borderColor: colors.accent[200],
-    backgroundColor: colors.accent[50],
-  },
-  guestRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  guestIconBubble: {
-    width: 42,
-    height: 42,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.neutral.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  guestBannerText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-  },
-  guestBannerSub: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
-    textAlign: 'left',
-  },
-  
-  // Pillars
-  pillarsGrid: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  pillarCard: {
-    flex: 1,
-    gap: spacing.sm,
-  },
-  pillarIconBubble: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.neutral[100],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pillarTitle: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-  },
-  pillarDesc: {
-    fontSize: typography.fontSize.xs,
-    color: colors.text.secondary,
-    lineHeight: 16,
-    textAlign: 'left',
+    textAlign: 'center',
   },
 });
 
-export default HomeScreen;
+export default HomeScreenBento;
