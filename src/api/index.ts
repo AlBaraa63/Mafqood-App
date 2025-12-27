@@ -41,20 +41,29 @@ const MOCK_DELAY = 800;
  * Handles both web and native platforms
  */
 async function prepareImageForUpload(uri: string, filename: string) {
+  const hasExtension = /\.[a-zA-Z0-9]+$/.test(filename);
+  
   if (Platform.OS === 'web') {
     // For web, fetch the blob and create a File object
     const response = await fetch(uri);
     const blob = await response.blob();
-    const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
+    const mime = blob.type || 'image/jpeg';
+    const extFromMime = mime.split('/')[1] || 'jpg';
+    const safeExt = ['jpeg', 'jpg', 'png', 'webp'].includes(extFromMime) ? extFromMime : 'jpg';
+    const safeName = hasExtension ? filename : `upload.${safeExt}`;
+    const file = new File([blob], safeName, { type: `image/${safeExt}` });
     return file;
   } else {
     // For native (iOS/Android), use the React Native format
     const match = /\.([\w]+)$/.exec(filename);
-    const type = match ? `image/${match[1]}` : 'image/jpeg';
+    const ext = match ? match[1] : 'jpg';
+    const safeExt = ['jpeg', 'jpg', 'png', 'webp'].includes(ext) ? ext : 'jpg';
+    const type = `image/${safeExt}`;
+    const safeName = hasExtension ? filename : `upload.${safeExt}`;
     
     return {
       uri,
-      name: filename,
+      name: safeName,
       type,
     } as any;
   }

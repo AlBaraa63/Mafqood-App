@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     ...shadows.md,
   },
   cardRtl: {
-    direction: 'rtl',
+    writingDirection: 'rtl',
   },
   recentItemImage: {
     width: '100%',
