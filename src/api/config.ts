@@ -2,8 +2,41 @@
  * Mafqood App - API Configuration
  */
 
-// TODO: Replace with actual backend URL
-export const API_BASE_URL = 'https://api.mafqood.ae'; // Placeholder
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+
+// Backend URL - Update this based on your environment
+// For local development: http://localhost:8000
+// For Expo on physical device: http://YOUR_LOCAL_IP:8000
+
+/**
+ * Get the API base URL based on the platform and environment
+ */
+function getApiUrl(): string {
+  if (!__DEV__) {
+    // Production URL
+    return 'https://api.mafqood.ae';
+  }
+
+  // Development URLs
+  // For Android emulator, use 10.0.2.2 to access host machine's localhost
+  // For iOS simulator, use localhost
+  // For physical devices, use your machine's local IP address
+  
+  const localhost = Platform.select({
+    ios: 'localhost',
+    android: '10.0.2.2', // Android emulator's special IP for host machine
+    default: 'localhost',
+  });
+
+  // You can override this by setting EXPO_PUBLIC_API_URL in your .env file
+  // Or set your local IP manually for physical device testing
+  const apiUrl = Constants.expoConfig?.extra?.apiUrl || `http://${localhost}:8000`;
+  
+  return apiUrl;
+}
+
+export const API_BASE_URL = getApiUrl();
 
 export const API_ENDPOINTS = {
   // Auth

@@ -141,6 +141,51 @@ export interface HistoryResponse {
   foundItems: MatchGroup[];
 }
 
+// ===== Backend API Types =====
+
+// Backend types (matching Python Pydantic schemas)
+export interface BackendItem {
+  id: number;
+  type: 'lost' | 'found';
+  title: string;
+  description: string | null;
+  location_type: string;
+  location_detail: string | null;
+  time_frame: string;
+  image_url: string;
+  created_at: string;
+}
+
+export interface BackendMatchResult {
+  item: BackendItem;
+  similarity: number; // 0.0 to 1.0
+}
+
+export interface BackendItemWithMatches {
+  item: BackendItem;
+  matches: BackendMatchResult[];
+}
+
+export interface BackendLostItemResponse {
+  item: BackendItem;
+  matches: BackendMatchResult[];
+}
+
+export interface BackendFoundItemResponse {
+  item: BackendItem;
+  matches: BackendMatchResult[];
+}
+
+export interface BackendHistoryResponse {
+  lost_items: BackendItemWithMatches[];
+  found_items: BackendItemWithMatches[];
+}
+
+export interface BackendItemListResponse {
+  items: BackendItem[];
+  count: number;
+}
+
 // ===== Navigation Types =====
 
 export type RootStackParamList = {
