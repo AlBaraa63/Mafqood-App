@@ -104,68 +104,69 @@ export const ReportPhotoScreen: React.FC = () => {
     : t('report_photo_found_subtitle');
   
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
-      <View style={styles.content}>
+    <SafeAreaView className="flex-1 bg-background-primary" edges={['bottom']}>
+      <View className="flex-1 px-4 md:px-6 py-3">
         <Stepper currentStep={2} totalSteps={6} />
         
-        <View style={styles.header}>
-          <Text style={styles.title}>{t('report_photo_title')}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
+        <View className="mb-4">
+          <Text className="text-lg md:text-xl font-bold text-text-primary mb-1">{t('report_photo_title')}</Text>
+          <Text className="text-sm md:text-base text-text-secondary">{subtitle}</Text>
         </View>
         
         {/* Image Preview or Upload Buttons */}
         {imageUri ? (
-          <View style={styles.previewContainer}>
-            <Image source={{ uri: imageUri }} style={styles.preview} />
-            <TouchableOpacity style={styles.removeButton} onPress={handleRemovePhoto}>
-              <Text style={styles.removeButtonText}>{t('remove_photo')}</Text>
+          <View className="flex-1 items-center justify-center mb-4">
+            <Image source={{ uri: imageUri }} className="w-full h-64 md:h-80 rounded-xl" resizeMode="cover" />
+            <TouchableOpacity
+              className="mt-3 px-4 py-2 bg-error/10 rounded-lg"
+              onPress={handleRemovePhoto}
+            >
+              <Text className="text-sm font-medium text-error">{t('remove_photo')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          <View style={styles.uploadButtons}>
-            <Card style={styles.uploadCard} onPress={handleTakePhoto}>
-              <Text style={styles.uploadIcon}>📷</Text>
-              <Text style={styles.uploadText}>{t('take_photo')}</Text>
+          <View className="flex-1 flex-row gap-3 mb-4">
+            <Card style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: spacing['2xl']}} onPress={handleTakePhoto}>
+              <Text className="text-4xl mb-2">📷</Text>
+              <Text className="text-sm md:text-base font-medium text-text-primary">{t('take_photo')}</Text>
             </Card>
             
-            <Card style={styles.uploadCard} onPress={handleChooseFromGallery}>
-              <Text style={styles.uploadIcon}>🖼️</Text>
-              <Text style={styles.uploadText}>{t('choose_from_gallery')}</Text>
+            <Card style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: spacing['2xl']}} onPress={handleChooseFromGallery}>
+              <Text className="text-4xl mb-2">🖼️</Text>
+              <Text className="text-sm md:text-base font-medium text-text-primary">{t('choose_from_gallery')}</Text>
             </Card>
           </View>
         )}
         
         {/* Privacy Note */}
-        <View style={styles.privacyNote}>
-          <Text style={styles.privacyIcon}>🔒</Text>
-          <Text style={styles.privacyText}>{t('photo_privacy_note')}</Text>
+        <View className="flex-row items-center bg-primary-50 p-3 rounded-lg mb-3">
+          <Text className="text-2xl mr-2">🔒</Text>
+          <Text className="flex-1 text-xs md:text-sm text-text-secondary">{t('photo_privacy_note')}</Text>
         </View>
         
         {/* Confirmation Checkbox */}
         <TouchableOpacity
-          style={styles.checkboxContainer}
+          className="flex-row items-center mb-4"
           onPress={() => setConfirmed(!confirmed)}
         >
-          <View style={[styles.checkbox, confirmed && styles.checkboxChecked]}>
-            {confirmed && <Text style={styles.checkmark}>✓</Text>}
+          <View className={`w-6 h-6 rounded border-2 items-center justify-center mr-3 ${confirmed ? 'bg-primary-500 border-primary-500' : 'border-neutral-300'}`}>
+            {confirmed && <Text className="text-white text-sm font-bold">✓</Text>}
           </View>
-          <Text style={styles.checkboxLabel}>{t('photo_confirm_checkbox')}</Text>
+          <Text className="flex-1 text-sm text-text-secondary">{t('photo_confirm_checkbox')}</Text>
         </TouchableOpacity>
         
-        {/* TODO: Connect to backend endpoint for image upload and optional blurring */}
-        
         {/* Navigation Buttons */}
-        <View style={styles.footer}>
+        <View className="flex-row gap-3">
           <Button
             title={t('back')}
             onPress={() => navigation.goBack()}
             variant="outline"
-            style={styles.backButton}
+            style={{flex: 1}}
           />
           <Button
             title={t('next')}
             onPress={handleNext}
-            style={styles.nextButton}
+            style={{flex: 1}}
           />
         </View>
       </View>

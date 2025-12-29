@@ -155,60 +155,25 @@ export const HomeScreen: React.FC = () => {
     setNotificationCount(0);
   };
   
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'open': return t('status_open');
-      case 'matched': return t('status_matched');
-      case 'closed': return t('status_closed');
-      default: return status;
-    }
-  };
-  
-  const renderRecentItem = ({ item }: { item: Item }) => (
-    <TouchableOpacity
-      style={[styles.recentItemCard, isRTL && styles.cardRtl]}
-      onPress={() => navigation.navigate('MatchesTab')}
-      activeOpacity={0.85}
-    >
-      <Image
-        source={{ uri: item.imageUrl }}
-        style={styles.recentItemImage}
-        resizeMode="cover"
-      />
-      <View style={styles.recentItemContent}>
-        <View style={[styles.recentItemHeader, isRTL && styles.rtl]}>
-          <TypeChip type={item.type} label={item.type === 'lost' ? t('lost_item') : t('found_item')} />
-          <StatusChip
-            status={item.status}
-            label={getStatusLabel(item.status)}
-            size="small"
-          />
-        </View>
-        <Text style={[styles.recentItemTitle, isRTL && styles.textRight]} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={[styles.recentItemLocation, isRTL && styles.textRight]} numberOfLines={1}>
-          {item.location}
-        </Text>
-        <Text style={[styles.recentItemMeta, isRTL && styles.textRight]}>{formatRelative(item.createdAt)}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background-primary" edges={['top']}>
       {/* Header with Profile and Notifications */}
-      <Header
-        avatarUrl={user?.avatarUrl}
-        userName={user?.fullName || 'Guest'}
-        hasUnreadNotifications={hasUnreadNotifications}
-        notificationCount={notificationCount}
-        onProfilePress={handleProfilePress}
-        onNotificationPress={handleNotificationPress}
-      />
+      <View className="px-4 md:px-6 lg:px-8">
+        <Header
+          avatarUrl={user?.avatarUrl}
+          userName={user?.fullName || 'Guest'}
+          hasUnreadNotifications={hasUnreadNotifications}
+          notificationCount={notificationCount}
+          onProfilePress={handleProfilePress}
+          onNotificationPress={handleNotificationPress}
+        />
+      </View>
       
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1"
+        contentContainerClassName="px-4 md:px-6 lg:px-8 py-4 md:py-6"
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -219,146 +184,150 @@ export const HomeScreen: React.FC = () => {
         }
       >
         {/* Hero Section */}
-        <Card style={styles.heroCard} variant="elevated">
-          <View style={styles.heroBackdrop} />
-          <View style={styles.heroBackdropAccent} />
-          <View style={styles.heroContent}>
-            <View style={[styles.heroBadge, isRTL && styles.rtl]}>
-              <MaterialCommunityIcons name="auto-fix" size={18} color={colors.accent[600]} />
-              <Text style={styles.heroBadgeText}>{t('home_ai_badge')}</Text>
-            </View>
-            <Text style={[styles.heroTitle, isRTL && styles.textRight]}>{t('home_hero_title')}</Text>
-            <Text style={[styles.heroSubtitle, isRTL && styles.textRight]}>{t('home_hero_subtitle')}</Text>
-            <View style={[styles.ctaRow, isRTL && styles.rtl]}>
-              <Button
-                title={t('report_lost_item')}
-                onPress={handleReportLost}
-                variant="primary"
-                fullWidth
-                style={styles.primaryCta}
-                icon={<MaterialCommunityIcons name="alert-circle-outline" size={20} color={colors.neutral.white} />}
-              />
-              <Button
-                title={t('report_found_item')}
-                onPress={handleReportFound}
-                variant="secondary"
-                fullWidth
-                style={styles.secondaryCta}
-                icon={<MaterialCommunityIcons name="hand-heart" size={20} color={colors.neutral.white} />}
-              />
-            </View>
-            <View style={[styles.heroStatsRow, isRTL && styles.rtl]}>
-              {heroStats.map((stat) => (
-                <View key={stat.title} style={styles.heroStat}>
-                  <View style={[styles.heroStatIcon, { backgroundColor: `${stat.color}1A` }]}>
-                    <MaterialCommunityIcons name={stat.icon} size={18} color={stat.color} />
+        <View className="mb-6 md:mb-8">
+          <Card variant="elevated">
+            <View style={styles.heroBackdrop} />
+            <View style={styles.heroBackdropAccent} />
+            <View className="p-6 md:p-8 lg:p-10">
+              <View className={`flex-row items-center mb-3 md:mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <MaterialCommunityIcons name="auto-fix" size={18} color={colors.accent[600]} />
+                <Text className="ml-2 text-sm font-medium text-accent-600">{t('home_ai_badge')}</Text>
+              </View>
+              <Text className={`text-3xl md:text-4xl font-bold text-text-primary mb-2 md:mb-3 ${isRTL ? 'text-right' : ''}`}>
+                {t('home_hero_title')}
+              </Text>
+              <Text className={`text-base md:text-lg text-text-secondary mb-6 md:mb-8 ${isRTL ? 'text-right' : ''}`}>
+                {t('home_hero_subtitle')}
+              </Text>
+              <View className={`flex-row gap-3 md:gap-4 mb-6 md:mb-8 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Button
+                  title={t('report_lost_item')}
+                  onPress={handleReportLost}
+                  variant="primary"
+                  fullWidth
+                  style={styles.primaryCta}
+                  icon={<MaterialCommunityIcons name="alert-circle-outline" size={20} color={colors.neutral.white} />}
+                />
+                <Button
+                  title={t('report_found_item')}
+                  onPress={handleReportFound}
+                  variant="secondary"
+                  fullWidth
+                  style={styles.secondaryCta}
+                  icon={<MaterialCommunityIcons name="hand-heart" size={20} color={colors.neutral.white} />}
+                />
+              </View>
+              <View className={`flex-row gap-2 md:gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                {heroStats.map((stat) => (
+                  <View key={stat.title} style={styles.heroStat}>
+                    <View style={[styles.heroStatIcon, { backgroundColor: `${stat.color}1A` }]}>
+                      <MaterialCommunityIcons name={stat.icon} size={18} color={stat.color} />
+                    </View>
+                    <Text style={[styles.heroStatTitle, isRTL && styles.textRight]}>{stat.title}</Text>
+                    <Text style={[styles.heroStatSubtitle, isRTL && styles.textRight]} numberOfLines={2}>{stat.subtitle}</Text>
                   </View>
-                  <Text style={[styles.heroStatTitle, isRTL && styles.textRight]}>{stat.title}</Text>
-                  <Text style={[styles.heroStatSubtitle, isRTL && styles.textRight]} numberOfLines={2}>{stat.subtitle}</Text>
-                </View>
-              ))}
+                ))}
+              </View>
             </View>
-          </View>
-        </Card>
-        
-        {/* Quick Links */}
-        <View style={[styles.quickLinks, isRTL && styles.rtl]}>
-          <Card
-            style={StyleSheet.flatten([styles.quickLinkCard, isRTL && styles.cardRtl])}
-            variant="outlined"
-            onPress={() => navigation.navigate('MatchesTab')}
-          >
-            <View style={styles.quickLinkIconWrap}>
-              <MaterialCommunityIcons name="magnify-scan" size={22} color={colors.primary[500]} />
-            </View>
-            <View style={styles.quickLinkTextWrap}>
-              <Text style={[styles.quickLinkLabel, isRTL && styles.textRight]}>{t('view_matches')}</Text>
-              <Text style={[styles.quickLinkSub, isRTL && styles.textRight]} numberOfLines={1}>{t('matches_subtitle')}</Text>
-            </View>
-            <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.text.tertiary} />
-          </Card>
-          <Card
-            style={StyleSheet.flatten([styles.quickLinkCard, isRTL && styles.cardRtl])}
-            variant="outlined"
-            onPress={() => navigation.navigate('ProfileTab')}
-          >
-            <View style={[styles.quickLinkIconWrap, { backgroundColor: colors.highlight[50] }]}>
-              <MaterialCommunityIcons name="clipboard-list-outline" size={22} color={colors.highlight[500]} />
-            </View>
-            <View style={styles.quickLinkTextWrap}>
-              <Text style={[styles.quickLinkLabel, isRTL && styles.textRight]}>{t('my_reports')}</Text>
-              <Text style={[styles.quickLinkSub, isRTL && styles.textRight]} numberOfLines={1}>{t('home_reports_shortcut')}</Text>
-            </View>
-            <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.text.tertiary} />
           </Card>
         </View>
         
-        {/* Recent Items (only for logged in users) */}
-        {!isGuest && (
-          <View style={styles.section}>
-            <SectionHeader title={t('recent_items')} actionLabel={t('view_matches')} onAction={() => navigation.navigate('MatchesTab')} />
-            {isLoading ? (
-              <Loading size="small" />
-            ) : recentItems.length > 0 ? (
-              <FlatList
-                data={recentItems}
-                renderItem={renderRecentItem}
-                keyExtractor={(item) => item.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                ItemSeparatorComponent={() => <View style={{ width: spacing.md }} />}
-                contentContainerStyle={[styles.recentItemsList, isRTL && styles.rtlList]}
-              />
-            ) : (
-              <Card style={styles.emptyRecentCard} variant="outlined">
-                <EmptyState
-                  icon='dY"-'
-                  title={t('no_recent_items')}
-                  description={t('home_empty_recent')}
-                />
-              </Card>
-            )}
-          </View>
-        )}
-        
-        {/* Guest Mode Banner */}
-        {isGuest && (
-          <Card style={styles.guestBanner} variant="outlined">
-            <View style={[styles.guestRow, isRTL && styles.rtl]}>
-              <View style={styles.guestIconBubble}>
-                <MaterialCommunityIcons name="account-off-outline" size={22} color={colors.primary[500]} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.guestBannerText, isRTL && styles.textRight]}>{t('guest_mode_limited')}</Text>
-                <Text style={[styles.guestBannerSub, isRTL && styles.textRight]}>{t('guest_cannot_report')}</Text>
-              </View>
-              <MaterialCommunityIcons name={isRTL ? 'chevron-left' : 'chevron-right'} size={20} color={colors.text.tertiary} />
-            </View>
-          </Card>
-        )}
-        
-        {/* Brand Pillars */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>{t('home_pillars_title')}</Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.pillarsGrid}
-          >
-            {valueCards.map((card) => (
-              <Card
-                key={card.title}
-                style={StyleSheet.flatten([styles.pillarCard, isRTL && styles.cardRtl])}
-                variant="elevated"
-              >
-                <View style={styles.pillarIconBubble}>
-                  <MaterialCommunityIcons name={card.icon} size={22} color={colors.primary[500]} />
+        {/* How It Works - Step by Step */}
+        <View className="mb-6 md:mb-8">
+          <Text className={`text-xl md:text-2xl font-bold text-text-primary mb-4 md:mb-6 ${isRTL ? 'text-right' : ''}`}>
+            {t('how_it_works')}
+          </Text>
+          <View className="gap-4 md:gap-5">
+            {/* Step 1 */}
+            <Card variant="outlined">
+              <View className={`flex-row items-start p-4 md:p-5 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <View className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-100 items-center justify-center mr-4">
+                  <Text className="text-lg md:text-xl font-bold text-primary-600">1</Text>
                 </View>
-                <Text style={[styles.pillarTitle, isRTL && styles.textRight]}>{card.title}</Text>
-                <Text style={[styles.pillarDesc, isRTL && styles.textRight]}>{card.desc}</Text>
+                <View className="flex-1">
+                  <Text className={`text-base md:text-lg font-semibold text-text-primary mb-1 ${isRTL ? 'text-right' : ''}`}>
+                    📸 {t('step_report_title')}
+                  </Text>
+                  <Text className={`text-sm md:text-base text-text-secondary ${isRTL ? 'text-right' : ''}`}>
+                    {t('step_report_desc')}
+                  </Text>
+                </View>
+              </View>
+            </Card>
+
+            {/* Step 2 */}
+            <Card variant="outlined">
+              <View className={`flex-row items-start p-4 md:p-5 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <View className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-accent-100 items-center justify-center mr-4">
+                  <Text className="text-lg md:text-xl font-bold text-accent-600">2</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className={`text-base md:text-lg font-semibold text-text-primary mb-1 ${isRTL ? 'text-right' : ''}`}>
+                    🤖 {t('step_ai_title')}
+                  </Text>
+                  <Text className={`text-sm md:text-base text-text-secondary ${isRTL ? 'text-right' : ''}`}>
+                    {t('step_ai_desc')}
+                  </Text>
+                </View>
+              </View>
+            </Card>
+
+            {/* Step 3 */}
+            <Card variant="outlined">
+              <View className={`flex-row items-start p-4 md:p-5 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <View className="w-10 h-10 md:w-12 md:h-12 rounded-full items-center justify-center mr-4" style={{backgroundColor: colors.success.main + '1A'}}>
+                  <Text className="text-lg md:text-xl font-bold" style={{color: colors.success.main}}>3</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className={`text-base md:text-lg font-semibold text-text-primary mb-1 ${isRTL ? 'text-right' : ''}`}>
+                    ✨ {t('step_match_title')}
+                  </Text>
+                  <Text className={`text-sm md:text-base text-text-secondary ${isRTL ? 'text-right' : ''}`}>
+                    {t('step_match_desc')}
+                  </Text>
+                </View>
+              </View>
+            </Card>
+
+            {/* Step 4 */}
+            <Card variant="outlined">
+              <View className={`flex-row items-start p-4 md:p-5 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <View className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-highlight-100 items-center justify-center mr-4">
+                  <Text className="text-lg md:text-xl font-bold text-highlight-600">4</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className={`text-base md:text-lg font-semibold text-text-primary mb-1 ${isRTL ? 'text-right' : ''}`}>
+                    🤝 {t('step_reunite_title')}
+                  </Text>
+                  <Text className={`text-sm md:text-base text-text-secondary ${isRTL ? 'text-right' : ''}`}>
+                    {t('step_reunite_desc')}
+                  </Text>
+                </View>
+              </View>
+            </Card>
+          </View>
+        </View>
+
+        {/* Features */}
+        <View className="mb-2">
+          <Text className={`text-xl md:text-2xl font-bold text-text-primary mb-4 md:mb-6 ${isRTL ? 'text-right' : ''}`}>
+            {t('why_choose_us')}
+          </Text>
+          <View className="flex-row flex-wrap gap-3 md:gap-4">
+            {valueCards.map((card) => (
+              <Card key={card.title} variant="elevated" style={{flex: 1, minWidth: '45%', padding: spacing.lg, alignItems: 'center'}}>
+                <View style={{width: 48, height: 48, borderRadius: 16, backgroundColor: colors.primary[50], alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md}}>
+                  <MaterialCommunityIcons name={card.icon} size={24} color={colors.primary[500]} />
+                </View>
+                <Text className={`text-sm md:text-base font-semibold text-text-primary text-center mb-1 ${isRTL ? 'text-right' : ''}`}>
+                  {card.title}
+                </Text>
+                <Text className={`text-xs md:text-sm text-text-secondary text-center ${isRTL ? 'text-right' : ''}`}>
+                  {card.desc}
+                </Text>
               </Card>
             ))}
-          </ScrollView>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -366,16 +335,6 @@ export const HomeScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background.secondary,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing['3xl'],
-    gap: spacing.xl,
-  },
   rtl: {
     flexDirection: 'row-reverse',
   },
@@ -384,13 +343,6 @@ const styles = StyleSheet.create({
   },
 
   // Hero
-  heroCard: {
-    padding: spacing['2xl'],
-    backgroundColor: colors.neutral.white,
-    borderRadius: borderRadius['2xl'],
-    ...shadows.lg,
-    overflow: 'hidden',
-  },
   heroBackdrop: {
     position: 'absolute',
     top: 0,
@@ -410,55 +362,11 @@ const styles = StyleSheet.create({
     right: -60,
     transform: [{ rotate: '25deg' }],
   },
-  heroContent: {
-    gap: spacing.sm,
-    position: 'relative',
-  },
-  heroBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.accent[50],
-    borderRadius: borderRadius.full,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.md,
-  },
-  heroBadgeText: {
-    color: colors.accent[700],
-    fontWeight: typography.fontWeight.semibold,
-    fontSize: typography.fontSize.sm,
-  },
-  heroTitle: {
-    fontSize: typography.fontSize['3xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
-  },
-  heroSubtitle: {
-    fontSize: typography.fontSize.md,
-    color: colors.text.secondary,
-    lineHeight: 22,
-    marginBottom: spacing['2xl'],
-    textAlign: 'left',
-  },
-  ctaRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    flexWrap: 'wrap',
-    alignItems: 'stretch',
-    marginBottom: spacing.lg,
-  },
   primaryCta: {
     flex: 1,
   },
   secondaryCta: {
     flex: 1,
-  },
-  heroStatsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
   },
   heroStat: {
     flex: 1,
@@ -483,158 +391,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     fontSize: 10,
     color: colors.text.tertiary,
-    textAlign: 'left',
-  },
-
-  // Quick Links
-  quickLinks: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  quickLinkCard: {
-    flex: 1,
-    padding: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  quickLinkIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.accent[50],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickLinkTextWrap: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  quickLinkLabel: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-  },
-  quickLinkSub: {
-    fontSize: typography.fontSize.xs,
-    color: colors.text.secondary,
-    textAlign: 'left',
-  },
-
-  // Section
-  section: {
-    gap: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: typography.fontSize['2xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
-  },
-  
-  // Recent Items
-  recentItemsList: {
-    paddingVertical: spacing.sm,
-  },
-  rtlList: {
-    flexDirection: 'row-reverse',
-  },
-  recentItemCard: {
-    width: 220,
-    backgroundColor: colors.neutral.white,
-    borderRadius: borderRadius['2xl'],
-    overflow: 'hidden',
-    ...shadows.md,
-  },
-  cardRtl: {
-    writingDirection: 'rtl',
-  },
-  recentItemImage: {
-    width: '100%',
-    height: 140,
-    backgroundColor: colors.neutral[200],
-  },
-  recentItemContent: {
-    padding: spacing.md,
-    gap: spacing.xs,
-  },
-  recentItemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  recentItemTitle: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-  },
-  recentItemLocation: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
-  },
-  recentItemMeta: {
-    fontSize: typography.fontSize.xs,
-    color: colors.text.tertiary,
-  },
-  emptyRecentCard: {
-    backgroundColor: colors.neutral.white,
-  },
-  
-  // Guest Banner
-  guestBanner: {
-    borderColor: colors.accent[200],
-    backgroundColor: colors.accent[50],
-  },
-  guestRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  guestIconBubble: {
-    width: 42,
-    height: 42,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.neutral.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  guestBannerText: {
-    fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-  },
-  guestBannerSub: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
-    textAlign: 'left',
-  },
-  
-  // Pillars
-  pillarsGrid: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  pillarCard: {
-    flex: 1,
-    gap: spacing.sm,
-  },
-  pillarIconBubble: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.neutral[100],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pillarTitle: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-  },
-  pillarDesc: {
-    fontSize: typography.fontSize.xs,
-    color: colors.text.secondary,
-    lineHeight: 16,
     textAlign: 'left',
   },
 });

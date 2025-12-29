@@ -97,6 +97,18 @@ const en = {
   view_matches: 'View Matches',
   my_reports: 'My Reports',
 
+  // Home - How It Works
+  how_it_works: 'How It Works',
+  why_choose_us: 'Why Choose Mafqood?',
+  step_report_title: 'Report Your Item',
+  step_report_desc: 'Upload a photo and details of your lost or found item in seconds',
+  step_ai_title: 'AI Analyzes & Searches',
+  step_ai_desc: 'Our AI automatically searches through all reports to find potential matches',
+  step_match_title: 'Get Instant Matches',
+  step_match_desc: 'Receive real-time notifications when we find possible matches for your item',
+  step_reunite_title: 'Connect & Reunite',
+  step_reunite_desc: 'Contact the match securely and reunite with your item',
+
   // Home - Value Props
   value_citywide: 'City-wide coverage',
   value_citywide_desc: 'One platform for all of Dubai',
@@ -361,6 +373,18 @@ const ar: typeof en = {
   report_found_item: 'تقديم بلاغ معثور عليه',
   view_matches: 'عرض التطابقات',
   my_reports: 'بلاغاتي',
+
+  // Home - How It Works
+  how_it_works: 'كيف يعمل النظام',
+  why_choose_us: 'لماذا تختار مفقود؟',
+  step_report_title: 'أبلغ عن العنصر',
+  step_report_desc: 'قم بتحميل صورة وتفاصيل العنصر المفقود أو المعثور عليه في ثوانٍ',
+  step_ai_title: 'الذكاء الاصطناعي يحلل ويبحث',
+  step_ai_desc: 'يقوم الذكاء الاصطناعي تلقائياً بالبحث في جميع البلاغات لإيجاد التطابقات المحتملة',
+  step_match_title: 'احصل على تطابقات فورية',
+  step_match_desc: 'تلق إشعارات فورية عندما نجد تطابقات محتملة لعنصرك',
+  step_reunite_title: 'تواصل واستعد عنصرك',
+  step_reunite_desc: 'تواصل مع التطابق بشكل آمن واستعد عنصرك',
 
   // Home - Value Props
   value_citywide: 'تغطية على مستوى دبي',

@@ -33,8 +33,8 @@ export const ReportTypeSelectScreen: React.FC = () => {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
-      <View style={styles.content}>
+    <SafeAreaView className="flex-1 bg-background-primary" edges={['bottom']}>
+      <View className="flex-1 px-4 md:px-6 py-4 md:py-6">
         <Stepper
           currentStep={1}
           totalSteps={6}
@@ -48,41 +48,41 @@ export const ReportTypeSelectScreen: React.FC = () => {
           ]}
         />
         
-        <View style={styles.header}>
-          <Text style={styles.title}>{t('report_type_title')}</Text>
-          <Text style={styles.subtitle}>{t('report_intro_subtitle')}</Text>
+        <View className="mb-4 md:mb-6">
+          <Text className="text-2xl md:text-3xl lg:text-4xl font-bold text-text-primary text-center mb-2">{t('report_type_title')}</Text>
+          <Text className="text-sm md:text-base text-text-secondary text-center mb-6 md:mb-8">{t('report_intro_subtitle')}</Text>
         </View>
         
-        <View style={styles.options}>
+        <View className="gap-4 md:gap-6">
           <Card
-            style={styles.optionCard}
+            style={{alignItems: 'center', paddingVertical: spacing.xl}}
             variant="outlined"
             onPress={() => handleSelectType('lost')}
           >
-            <View style={[styles.optionIconContainer, styles.lostIconContainer]}>
+            <View className="w-16 h-16 md:w-20 md:h-20 rounded-full items-center justify-center mb-3 md:mb-4" style={{backgroundColor: colors.primary[100]}}>
               <MaterialCommunityIcons name="alert-outline" size={28} color={colors.primary[500]} />
             </View>
-            <Text style={styles.optionTitle}>{t('report_type_lost')}</Text>
-            <Text style={styles.optionDesc}>{t('report_type_lost_desc')}</Text>
-            <View style={styles.optionHint}>
-              <MaterialCommunityIcons name="arrow-right-bottom-bold" size={16} color={colors.primary[500]} />
-              <Text style={styles.optionHintText}>{t('report_type_lost_hint')}</Text>
+            <Text className="text-base md:text-lg font-semibold text-text-primary mb-2">{t('report_type_lost')}</Text>
+            <Text className="text-xs md:text-sm text-text-secondary text-center mb-2">{t('report_type_lost_desc')}</Text>
+            <View className="flex-row items-center gap-2 mt-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full" style={{backgroundColor: colors.neutral[100]}}>
+              <MaterialCommunityIcons name="arrow-right-bottom-bold" size={14} color={colors.primary[500]} />
+              <Text className="text-xs text-text-secondary">{t('report_type_lost_hint')}</Text>
             </View>
           </Card>
           
           <Card
-            style={styles.optionCard}
+            style={{alignItems: 'center', paddingVertical: spacing.xl}}
             variant="outlined"
             onPress={() => handleSelectType('found')}
           >
-            <View style={[styles.optionIconContainer, styles.foundIconContainer]}>
+            <View className="w-16 h-16 md:w-20 md:h-20 rounded-full items-center justify-center mb-3 md:mb-4" style={{backgroundColor: colors.accent[100]}}>
               <MaterialCommunityIcons name="hand-heart" size={28} color={colors.accent[600]} />
             </View>
-            <Text style={styles.optionTitle}>{t('report_type_found')}</Text>
-            <Text style={styles.optionDesc}>{t('report_type_found_desc')}</Text>
-            <View style={styles.optionHint}>
-              <MaterialCommunityIcons name="arrow-right-bottom-bold" size={16} color={colors.accent[600]} />
-              <Text style={styles.optionHintText}>{t('report_type_found_hint')}</Text>
+            <Text className="text-base md:text-lg font-semibold text-text-primary mb-2">{t('report_type_found')}</Text>
+            <Text className="text-xs md:text-sm text-text-secondary text-center mb-2">{t('report_type_found_desc')}</Text>
+            <View className="flex-row items-center gap-2 mt-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full" style={{backgroundColor: colors.neutral[100]}}>
+              <MaterialCommunityIcons name="arrow-right-bottom-bold" size={14} color={colors.accent[600]} />
+              <Text className="text-xs text-text-secondary">{t('report_type_found_hint')}</Text>
             </View>
           </Card>
         </View>
@@ -90,80 +90,5 @@ export const ReportTypeSelectScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background.primary,
-  },
-  content: {
-    flex: 1,
-    padding: spacing.lg,
-    gap: spacing.lg,
-  },
-  header: {
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: typography.fontSize['3xl'],
-    fontWeight: typography.fontWeight.bold,
-    color: colors.text.primary,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: typography.fontSize.md,
-    color: colors.text.secondary,
-    textAlign: 'center',
-    marginTop: spacing.xs,
-    marginBottom: spacing['2xl'],
-  },
-  options: {
-    gap: spacing.lg,
-  },
-  optionCard: {
-    alignItems: 'center',
-    paddingVertical: spacing['2xl'],
-    gap: spacing.sm,
-  },
-  optionIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-  },
-  lostIconContainer: {
-    backgroundColor: colors.primary[100],
-  },
-  foundIconContainer: {
-    backgroundColor: colors.accent[100],
-  },
-  optionTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold,
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
-  },
-  optionDesc: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.secondary,
-    textAlign: 'center',
-  },
-  optionHint: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: spacing.sm,
-    backgroundColor: colors.neutral[100],
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  optionHintText: {
-    fontSize: typography.fontSize.xs,
-    color: colors.text.secondary,
-  },
-});
 
 export default ReportTypeSelectScreen;

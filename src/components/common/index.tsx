@@ -8,6 +8,7 @@ export { Input } from './Input';
 export { Card } from './Card';
 export { Stepper } from './Stepper';
 export { Header } from './Header';
+export { ScreenContainer } from './ScreenContainer';
 
 // Additional common components
 
