@@ -3,6 +3,9 @@
  */
 
 export { useAuthStore, useLanguageStore, useReportFormStore, useOnboardingStore } from './useStore';
+export { useResponsive, useResponsiveValue, useResponsiveSpacing, useResponsiveFontSize, useResponsiveGrid } from './useResponsive';
+export { useHaptics } from './useHaptics';
+export { useAnimatedValue, useFadeIn, useScale } from './useAnimatedValue';
 
 import { useCallback } from 'react';
 import { useLanguageStore } from './useStore';
