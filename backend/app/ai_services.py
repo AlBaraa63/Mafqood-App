@@ -5,9 +5,8 @@ from typing import Dict, Any, Optional
 
 from PIL import Image
 import easyocr
-from ultralytics import YOLO
-
-from .config import settings
+from ultralytics import YOLO  # type: ignore
+from . import config
 
 # --- AI Model Initialization ---
 
@@ -75,7 +74,7 @@ def analyze_image_for_report(image_data: bytes) -> Dict[str, Any]:
             
             if ocr_results:
                 # Join all detected text into a single string
-                results["extracted_text"] = " ".join(ocr_results)
+                results["extracted_text"] = " ".join(str(text) for text in ocr_results)
                 
         return results
         
@@ -124,7 +123,7 @@ def process_image_for_report(image_data: bytes, item_type: str) -> Dict[str, Any
     filename = f"{uuid.uuid4()}.{file_extension}"
     
     # Determine save path
-    save_dir = os.path.join(settings.MEDIA_ROOT, item_type)
+    save_dir = os.path.join(str(config.MEDIA_ROOT), item_type)
     os.makedirs(save_dir, exist_ok=True)
     image_path = os.path.join(save_dir, filename)
     
