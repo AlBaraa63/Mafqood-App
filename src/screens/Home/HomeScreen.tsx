@@ -150,7 +150,7 @@ export const HomeScreen: React.FC = () => {
   
   const handleNotificationPress = () => {
     // Navigate to notifications screen
-    navigation.navigate('NotificationsTab');
+    navigation.navigate('Notifications' as any);
     setHasUnreadNotifications(false);
     setNotificationCount(0);
   };

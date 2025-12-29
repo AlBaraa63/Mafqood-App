@@ -29,9 +29,20 @@ function getApiUrl(): string {
     default: 'localhost',
   });
 
-  // You can override this by setting EXPO_PUBLIC_API_URL in your .env file
-  // Or set your local IP manually for physical device testing
-  const apiUrl = Constants.expoConfig?.extra?.apiUrl || `http://${localhost}:8000`;
+  // Default fallback
+  const defaultUrl = `http://${localhost}:8000`;
+  
+  // Try to get from expo config
+  let apiUrl = defaultUrl;
+  try {
+    if (Constants.expoConfig?.extra?.apiUrl) {
+      apiUrl = Constants.expoConfig.extra.apiUrl;
+    }
+  } catch (e) {
+    console.warn('[API Config] Could not read expo config, using default:', defaultUrl);
+  }
+  
+  console.log('[API Config] API_BASE_URL:', apiUrl);
   
   return apiUrl;
 }
