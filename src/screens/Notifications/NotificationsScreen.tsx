@@ -20,6 +20,7 @@ import { colors, typography, spacing, borderRadius } from '../../theme';
 import { Loading, EmptyState } from '../../components/common';
 import { useTranslation, useFormatDate } from '../../hooks';
 import { MainTabParamList } from '../../types';
+import api from '../../api';
 
 type NotificationType = 'match' | 'message' | 'update' | 'system';
 
@@ -49,16 +50,14 @@ export const NotificationsScreen: React.FC = () => {
 
   const loadNotifications = async () => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await api.getNotifications();
-      // setNotifications(response.data);
+      const response = await api.getNotifications();
       
-      // Mock data for demonstration
-      setTimeout(() => {
-        setNotifications([]);
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }, 500);
+      if (response.success && response.data) {
+        setNotifications(response.data);
+      }
+      
+      setIsLoading(false);
+      setIsRefreshing(false);
     } catch (error) {
       console.error('Error loading notifications:', error);
       setIsLoading(false);
@@ -75,8 +74,7 @@ export const NotificationsScreen: React.FC = () => {
     try {
       // TODO: Replace with actual API call
       // await api.markNotificationAsRead(notificationId);
-      
-      setNotifications((prev) =>
+      Notifications((prev) =>
         prev.map((notif) =>
           notif.id === notificationId ? { ...notif, read: true } : notif
         )
@@ -91,8 +89,7 @@ export const NotificationsScreen: React.FC = () => {
       // TODO: Replace with actual API call
       // await api.markAllNotificationsAsRead();
       
-      setNotifications((prev) =>
-        prev.map((notif) => ({ ...notif, read: true }))
+      rev.map((notif) => ({ ...notif, read: true }))
       );
     } catch (error) {
       console.error('Error marking all notifications as read:', error);

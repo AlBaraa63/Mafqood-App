@@ -4,6 +4,7 @@
 
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { logger } from '../utils';
 
 // Backend URL - Update this based on your environment
 // For local development: http://localhost:8000
@@ -39,10 +40,10 @@ function getApiUrl(): string {
       apiUrl = Constants.expoConfig.extra.apiUrl;
     }
   } catch (e) {
-    console.warn('[API Config] Could not read expo config, using default:', defaultUrl);
+    logger.warn('Could not read expo config, using default:', defaultUrl);
   }
   
-  console.log('[API Config] API_BASE_URL:', apiUrl);
+  logger.info('API_BASE_URL:', apiUrl);
   
   return apiUrl;
 }
@@ -72,8 +73,16 @@ export const API_ENDPOINTS = {
   profile: '/api/users/me',
   updateProfile: '/api/users/me',
   
+  // Notifications
+  notifications: '/api/notifications',
+  markNotificationRead: (id: string) => `/api/notifications/${id}/read`,
+  markAllNotificationsRead: '/api/notifications/read-all',
+  
   // Upload
   uploadImage: '/api/upload/image',
+
+  // Admin/Test
+  reset: '/api/reset',
 };
 
 export const API_TIMEOUT = 30000; // 30 seconds

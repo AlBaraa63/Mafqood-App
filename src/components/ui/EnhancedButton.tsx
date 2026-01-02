@@ -38,6 +38,8 @@ interface ButtonProps {
   haptic?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 export const EnhancedButton: React.FC<ButtonProps> = ({
@@ -53,6 +55,8 @@ export const EnhancedButton: React.FC<ButtonProps> = ({
   haptic = true,
   style,
   textStyle,
+  accessibilityLabel,
+  accessibilityHint,
 }) => {
   const isDisabled = disabled || loading;
   const haptics = useHaptics();
@@ -215,6 +219,14 @@ export const EnhancedButton: React.FC<ButtonProps> = ({
       onPressOut={handlePressOut}
       disabled={isDisabled}
       activeOpacity={1}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{
+        disabled: isDisabled,
+        busy: loading,
+      }}
     >
       {loading ? (
         <ActivityIndicator

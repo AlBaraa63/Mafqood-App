@@ -6,7 +6,7 @@
 
 import { Platform } from 'react-native';
 import { API_BASE_URL, API_ENDPOINTS } from './config';
-import { get, post, uploadFormData } from './client';
+import { get, post, uploadFormData, del } from './client';
 import {
   User,
   Item,
@@ -25,14 +25,24 @@ import {
   BackendFoundItemResponse,
   BackendHistoryResponse,
 } from '../types';
+
+// Notification types
+type NotificationType = 'match' | 'message' | 'update' | 'system';
+
+interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  actionId?: string;
+}
+
 import {
   mockUser,
   getConfidenceFromSimilarity,
 } from './mockData';
-
-// Simulate network delay for mock functions
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-const MOCK_DELAY = 800;
 
 // ===== Helper Functions =====
 
@@ -72,7 +82,7 @@ async function prepareImageForUpload(uri: string, filename: string) {
 /**
  * Transform backend item to frontend format
  */
-function transformBackendItem(backendItem: BackendItem): Item {
+function transformBackendItem(backendItem: BackendItem, currentUserId?: string): Item {
   // Extract category from title or description (basic heuristic)
   const titleLower = backendItem.title.toLowerCase();
   let category: any = 'other';
@@ -99,7 +109,7 @@ function transformBackendItem(backendItem: BackendItem): Item {
     locationDetail: backendItem.location_detail || undefined,
     dateTime: backendItem.time_frame,
     contactMethod: 'in_app',
-    userId: 'user-1', // TODO: Get from auth context
+    userId: currentUserId || String(backendItem.id), // Use actual user ID or item ID as fallback
     createdAt: backendItem.created_at,
     updatedAt: backendItem.created_at,
   };
@@ -146,102 +156,90 @@ function transformBackendItemWithMatches(backendItemWithMatches: BackendItemWith
 
 /**
  * Login user with email and password
- * TODO: Connect to actual backend endpoint
  */
 export async function login(credentials: LoginCredentials): Promise<ApiResponse<{ user: User; token: string }>> {
-  await delay(MOCK_DELAY);
-  
-  // Mock validation
-  if (!credentials.email || !credentials.password) {
+  try {
+    const response = await post<{ user: User; token: string }>(
+      API_ENDPOINTS.login,
+      credentials
+    );
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error: any) {
     return {
       success: false,
-      error: 'Email and password are required',
+      error: error.message || 'Login failed',
     };
   }
-  
-  // Mock successful login
-  // TODO: Replace with actual API call
-  // const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.login}`, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(credentials),
-  // });
-  
-  return {
-    success: true,
-    data: {
-      user: mockUser,
-      token: 'mock-jwt-token-' + Date.now(),
-    },
-  };
 }
 
 /**
  * Register a new user
- * TODO: Connect to actual backend endpoint
  */
 export async function register(data: RegisterData): Promise<ApiResponse<{ user: User; token: string }>> {
-  await delay(MOCK_DELAY);
-  
-  // Mock validation
-  if (!data.email || !data.password || !data.fullName) {
+  try {
+    const response = await post<{ user: User; token: string }>(
+      API_ENDPOINTS.register,
+      data
+    );
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error: any) {
     return {
       success: false,
-      error: 'All fields are required',
+      error: error.message || 'Registration failed',
     };
   }
-  
-  // Mock successful registration
-  // TODO: Replace with actual API call
-  const newUser: User = {
-    id: 'user-' + Date.now(),
-    email: data.email,
-    fullName: data.fullName,
-    phone: data.phone,
-    isVenue: data.isVenue,
-    createdAt: new Date().toISOString(),
-  };
-  
-  return {
-    success: true,
-    data: {
-      user: newUser,
-      token: 'mock-jwt-token-' + Date.now(),
-    },
-  };
+}
+
+/**
+ * Admin/Test: Reset database (delete old data)
+ */
+export async function resetDatabase(token?: string | null): Promise<ApiResponse<{ message: string }>> {
+  try {
+    const response = await del<{ message: string }>(API_ENDPOINTS.reset, { token });
+    return { success: true, data: response };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Reset failed',
+    };
+  }
 }
 
 /**
  * Logout current user
- * TODO: Connect to actual backend endpoint
  */
 export async function logout(): Promise<ApiResponse<void>> {
-  await delay(MOCK_DELAY / 2);
-  
-  // TODO: Call backend to invalidate token
-  // await fetch(`${API_BASE_URL}${API_ENDPOINTS.logout}`, { method: 'POST' });
-  
-  return { success: true };
+  try {
+    await post(API_ENDPOINTS.logout);
+    return { success: true };
+  } catch (error: any) {
+    // Even if backend fails, we still clear local session
+    return { success: true };
+  }
 }
 
 /**
  * Request password reset
- * TODO: Connect to actual backend endpoint
  */
 export async function forgotPassword(email: string): Promise<ApiResponse<void>> {
-  await delay(MOCK_DELAY);
-  
-  // TODO: Replace with actual API call
-  // await fetch(`${API_BASE_URL}${API_ENDPOINTS.forgotPassword}`, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ email }),
-  // });
-  
-  return {
-    success: true,
-    message: 'If this email is registered, you will receive a reset link.',
-  };
+  try {
+    await post(API_ENDPOINTS.forgotPassword, { email });
+    return {
+      success: true,
+      message: 'If this email is registered, you will receive a reset link.',
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Failed to send reset email',
+    };
+  }
 }
 
 // ===== Items API =====
@@ -522,58 +520,58 @@ export async function getMatchById(matchId: string): Promise<ApiResponse<Match>>
 
 /**
  * Claim a match (user confirms the matched item is theirs)
- * TODO: Connect to actual backend endpoint
  */
 export async function claimMatch(matchId: string): Promise<ApiResponse<void>> {
-  await delay(MOCK_DELAY);
-  
-  // TODO: Implement actual claim flow with backend
-  // This would typically:
-  // 1. Update match status
-  // 2. Notify the other party
-  // 3. Potentially exchange contact info (mediated)
-  
-  return {
-    success: true,
-    message: 'Contact request sent! The other party will be notified.',
-  };
+  try {
+    await post(`${API_ENDPOINTS.matches}/${matchId}/claim`);
+    return {
+      success: true,
+      message: 'Contact request sent! The other party will be notified.',
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Failed to claim match',
+    };
+  }
 }
 
 // ===== User API =====
 
 /**
  * Get current user profile
- * TODO: Connect to actual backend endpoint
  */
 export async function getProfile(): Promise<ApiResponse<User>> {
-  await delay(MOCK_DELAY);
-  
-  // TODO: Replace with actual API call
-  
-  return {
-    success: true,
-    data: mockUser,
-  };
+  try {
+    const response = await get<User>(API_ENDPOINTS.profile);
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Failed to fetch profile',
+    };
+  }
 }
 
 /**
  * Update user profile
- * TODO: Connect to actual backend endpoint
  */
 export async function updateProfile(data: Partial<User>): Promise<ApiResponse<User>> {
-  await delay(MOCK_DELAY);
-  
-  // TODO: Replace with actual API call
-  
-  const updatedUser: User = {
-    ...mockUser,
-    ...data,
-  };
-  
-  return {
-    success: true,
-    data: updatedUser,
-  };
+  try {
+    const response = await post<User>(API_ENDPOINTS.updateProfile, data);
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Failed to update profile',
+    };
+  }
 }
 
 // ===== Image Upload =====
@@ -583,8 +581,6 @@ export async function updateProfile(data: Partial<User>): Promise<ApiResponse<Us
  * TODO: Connect to actual backend endpoint with optional blur processing
  */
 export async function uploadImage(imageUri: string): Promise<ApiResponse<{ url: string }>> {
-  await delay(MOCK_DELAY);
-  
   // TODO: Replace with actual API call
   // const form = new FormData();
   // form.append('file', { uri: imageUri, type: 'image/jpeg', name: 'photo.jpg' });
@@ -599,6 +595,74 @@ export async function uploadImage(imageUri: string): Promise<ApiResponse<{ url: 
       url: imageUri, // In real implementation, this would be the server URL
     },
   };
+}
+
+// ===== Notification APIs =====
+
+/**
+ * Get all notifications for current user
+ */
+export async function getNotifications(): Promise<ApiResponse<Notification[]>> {
+  try {
+    const response = await get<{ notifications: any[] }>(API_ENDPOINTS.notifications);
+    
+    // Transform backend notifications to frontend format
+    const notifications: Notification[] = response.notifications.map((notif: any) => ({
+      id: String(notif.id),
+      type: notif.type || 'system',
+      title: notif.title,
+      message: notif.message,
+      timestamp: notif.created_at,
+      read: notif.is_read || false,
+      actionId: notif.item_id ? String(notif.item_id) : undefined,
+    }));
+    
+    return {
+      success: true,
+      data: notifications,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Failed to fetch notifications',
+    };
+  }
+}
+
+/**
+ * Mark notification as read
+ */
+export async function markNotificationAsRead(notificationId: string): Promise<ApiResponse<void>> {
+  try {
+    await post(API_ENDPOINTS.markNotificationRead(notificationId));
+    
+    return {
+      success: true,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Failed to mark notification as read',
+    };
+  }
+}
+
+/**
+ * Mark all notifications as read
+ */
+export async function markAllNotificationsAsRead(): Promise<ApiResponse<void>> {
+  try {
+    await post(API_ENDPOINTS.markAllNotificationsRead);
+    
+    return {
+      success: true,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Failed to mark all notifications as read',
+    };
+  }
 }
 
 export default {
@@ -622,6 +686,11 @@ export default {
   // User
   getProfile,
   updateProfile,
+  
+  // Notifications
+  getNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
   
   // Upload
   uploadImage,

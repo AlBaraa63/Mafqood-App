@@ -4,6 +4,7 @@
  */
 
 import { API_BASE_URL, API_TIMEOUT } from './config';
+import { logger } from '../utils';
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -75,7 +76,7 @@ export async function apiRequest<T>(
 
   try {
     const url = `${API_BASE_URL}${endpoint}`;
-    console.log(`[API] ${method} ${url}`);
+    logger.api(method, endpoint, body);
 
     const response = await fetch(url, {
       ...config,
@@ -114,11 +115,11 @@ export async function apiRequest<T>(
         errorMessage = data.message;
       }
       
-      console.error(`[API] Error ${response.status}:`, errorMessage);
+      logger.error(`API Error ${response.status}:`, errorMessage);
       throw new ApiError(response.status, errorMessage, data);
     }
 
-    console.log(`[API] Success: ${method} ${url}`);
+    logger.info(`API Success: ${method} ${endpoint}`);
     return data as T;
 
   } catch (error: any) {

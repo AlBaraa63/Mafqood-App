@@ -15,9 +15,9 @@ import {
   ResponsiveContainer,
   EnhancedInput,
   FloatingActionButton,
-} from '../../components/ui';
-import { useResponsive, useResponsiveSpacing, useResponsiveFontSize } from '../../hooks';
-import { colors, typography, borderRadius } from '../../theme';
+} from '../components/ui';
+import { useResponsive, useResponsiveSpacing, useResponsiveFontSize } from '../hooks';
+import { colors, typography, borderRadius } from '../theme';
 
 export const ComponentShowcaseScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -69,32 +69,32 @@ export const ComponentShowcaseScreen: React.FC = () => {
           <View style={{ gap: spacing.md }}>
             <EnhancedButton
               title="Primary Button"
-              onPress={() => console.log('Primary')}
+              onPress={() => {}}
               variant="primary"
               fullWidth
             />
             <EnhancedButton
               title="Secondary Button"
-              onPress={() => console.log('Secondary')}
+              onPress={() => {}}
               variant="secondary"
               fullWidth
             />
             <EnhancedButton
               title="Gradient Button"
-              onPress={() => console.log('Gradient')}
+              onPress={() => {}}
               variant="gradient"
               fullWidth
               icon={<MaterialCommunityIcons name="star" size={20} color={colors.neutral.white} />}
             />
             <EnhancedButton
               title="Outline Button"
-              onPress={() => console.log('Outline')}
+              onPress={() => {}}
               variant="outline"
               fullWidth
             />
             <EnhancedButton
               title="Ghost Button"
-              onPress={() => console.log('Ghost')}
+              onPress={() => {}}
               variant="ghost"
               fullWidth
             />
@@ -113,7 +113,7 @@ export const ComponentShowcaseScreen: React.FC = () => {
               </Text>
             </GlassCard>
             
-            <GlassCard variant="premium" onPress={() => console.log('Premium pressed')}>
+            <GlassCard variant="premium" onPress={() => {}}>
               <Text style={{ fontSize: fontSize.md, fontWeight: typography.fontWeight.semibold }}>
                 Premium Card (Tappable)
               </Text>
@@ -125,7 +125,7 @@ export const ComponentShowcaseScreen: React.FC = () => {
         </Section>
 
         {/* Bottom Spacing for FAB */}
-        <View style={{ height: spacing['6xl'] }} />
+        <View style={{ height: spacing['4xl'] }} />
       </ScrollView>
 
       {/* Floating Action Button */}
@@ -140,7 +140,7 @@ export const ComponentShowcaseScreen: React.FC = () => {
           {
             icon: 'information',
             label: 'Info',
-            onPress: () => console.log('Info'),
+            onPress: () => {},
             color: colors.accent[500],
           },
         ]}

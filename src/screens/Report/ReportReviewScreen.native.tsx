@@ -347,7 +347,7 @@ export const ReportReviewScreen: React.FC = () => {
                 source={{ uri: formData.imageUri }}
                 style={{
                   width: '100%',
-                  height: isSmallDevice ? 150 : 180,
+                  height: isSmallDevice ? 200 : 260,
                   borderRadius: layout.radiusMd,
                 }}
                 resizeMode="cover"

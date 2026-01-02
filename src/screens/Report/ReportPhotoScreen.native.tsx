@@ -82,16 +82,16 @@ const UploadCard: React.FC<UploadCardProps> = ({ icon, label, onPress, delay }) 
               borderColor: colors.neutral[200],
               borderStyle: 'dashed',
               borderRadius: layout.radiusXl,
-              paddingVertical: isSmallDevice ? spacing.xl : spacing['2xl'],
+              paddingVertical: spacing['3xl'],
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: isSmallDevice ? 120 : 150,
+              minHeight: isSmallDevice ? 180 : 220,
             },
             animatedStyle,
           ]}
         >
-          <Text style={{ fontSize: layout.iconXl, marginBottom: spacing.sm }}>{icon}</Text>
-          <Text style={[typography.label, { color: colors.text.primary }]}>{label}</Text>
+          <Text style={{ fontSize: layout.iconXl * 1.8, marginBottom: spacing.md }}>{icon}</Text>
+          <Text style={[typography.h3, { color: colors.text.primary, textAlign: 'center' }]}>{label}</Text>
         </Animated.View>
       </TouchableOpacity>
     </Animated.View>
@@ -124,7 +124,7 @@ export const ReportPhotoScreen: React.FC = () => {
     : t('report_photo_found_subtitle');
 
   // Dynamic image preview height based on screen
-  const imagePreviewHeight = Math.min(SCREEN_HEIGHT * 0.35, 280);
+  const imagePreviewHeight = Math.min(SCREEN_HEIGHT * 0.45, 380);
 
   const requestPermission = useCallback(async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -288,8 +288,8 @@ export const ReportPhotoScreen: React.FC = () => {
             <View
               style={{
                 flexDirection: 'row',
-                gap: spacing.md,
-                marginBottom: spacing.lg,
+                gap: spacing.lg,
+                marginBottom: spacing.xl,
               }}
             >
               <UploadCard

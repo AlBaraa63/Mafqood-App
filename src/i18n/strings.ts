@@ -263,6 +263,9 @@ const en = {
   filter_all: 'All',
   filter_lost: 'Lost',
   filter_found: 'Found',
+  lost_reports: 'Lost Items',
+  found_reports: 'Found Items',
+  total_reports: 'Total Reports',
 
   // About
   about_title: 'About Mafqood',
@@ -545,6 +548,9 @@ const ar: typeof en = {
   filter_all: 'الكل',
   filter_lost: 'مفقود',
   filter_found: 'معثور عليه',
+  lost_reports: 'بلاغات المفقودات',
+  found_reports: 'بلاغات المعثور عليها',
+  total_reports: 'مجموع البلاغات',
 
   // About
   about_title: 'حول مفقود',

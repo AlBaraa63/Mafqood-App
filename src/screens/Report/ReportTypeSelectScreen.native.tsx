@@ -74,18 +74,19 @@ const TypeCard: React.FC<TypeCardProps> = ({
   };
 
   return (
-    <Animated.View entering={FadeInDown.delay(delay).springify()}>
+    <Animated.View entering={FadeInDown.delay(delay).springify()} style={{ flex: 1, justifyContent: 'center' }}>
       <GlassCard
         variant="elevated"
         onPress={handlePress}
-        style={{ marginBottom: spacing.md }}
+        style={{ marginBottom: spacing.md, flex: 1 }}
       >
-        <Animated.View style={animatedStyle}>
+        <Animated.View style={[animatedStyle, { flex: 1 }]}>
           <View
             style={{
+              flex: 1,
               flexDirection: 'row',
               alignItems: 'center',
-              padding: spacing.lg,
+              padding: spacing.xl,
             }}
           >
             {/* Icon */}
@@ -97,16 +98,17 @@ const TypeCard: React.FC<TypeCardProps> = ({
                 backgroundColor: bgColor,
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: spacing.lg,
+                marginRight: spacing.xl,
+                flexShrink: 0,
               }}
             >
-              <MaterialCommunityIcons name={icon} size={layout.iconXl} color={color} />
+              <MaterialCommunityIcons name={icon} size={layout.iconXl * 1.2} color={color} />
             </View>
 
             {/* Content */}
-            <View style={{ flex: 1 }}>
-              <Text style={[typography.h3, { marginBottom: spacing.xs }]}>{title}</Text>
-              <Text style={[typography.body, { marginBottom: spacing.sm }]}>{description}</Text>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <Text style={[typography.h2, { marginBottom: spacing.sm, fontWeight: '700' }]}>{title}</Text>
+              <Text style={[typography.body, { marginBottom: spacing.md, lineHeight: 22 }]}>{description}</Text>
               
               {/* Hint Badge */}
               <View
@@ -114,21 +116,21 @@ const TypeCard: React.FC<TypeCardProps> = ({
                   flexDirection: 'row',
                   alignItems: 'center',
                   backgroundColor: colors.neutral[100],
-                  paddingHorizontal: spacing.sm,
-                  paddingVertical: spacing.xs,
+                  paddingHorizontal: spacing.md,
+                  paddingVertical: spacing.sm,
                   borderRadius: layout.radiusFull,
                   alignSelf: 'flex-start',
                 }}
               >
                 <MaterialCommunityIcons
                   name="lightbulb-outline"
-                  size={layout.iconSm}
+                  size={layout.iconMd}
                   color={color}
                 />
                 <Text
                   style={[
-                    typography.caption,
-                    { marginLeft: spacing.xs, color: colors.text.secondary },
+                    typography.body,
+                    { marginLeft: spacing.sm, color: colors.text.secondary },
                   ]}
                 >
                   {hint}
@@ -139,8 +141,9 @@ const TypeCard: React.FC<TypeCardProps> = ({
             {/* Arrow */}
             <MaterialCommunityIcons
               name="chevron-right"
-              size={layout.iconLg}
+              size={layout.iconXl}
               color={colors.neutral[400]}
+              style={{ marginLeft: spacing.md }}
             />
           </View>
         </Animated.View>
@@ -180,14 +183,18 @@ export const ReportTypeSelectScreen: React.FC = () => {
       <StatusBar barStyle="dark-content" backgroundColor={colors.background.primary} />
       
       <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
-        <View style={{ flex: 1, paddingHorizontal: spacing.screenPadding }}>
-          {/* Progress Stepper */}
-          <ProgressStepper
-            currentStep={1}
-            totalSteps={6}
-            labels={stepLabels}
-          />
+        <View
+          style={{
+            paddingHorizontal: spacing.screenPadding,
+            paddingTop: spacing.md,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.neutral[200],
+          }}
+        >
+          <ProgressStepper currentStep={1} totalSteps={6} labels={stepLabels} />
+        </View>
 
+        <View style={{ flex: 1, paddingHorizontal: spacing.screenPadding }}>
           {/* Header */}
           <AnimatedView entering={FadeInUp.delay(100).springify()}>
             <View style={{ marginBottom: spacing.sectionGap }}>
@@ -201,7 +208,7 @@ export const ReportTypeSelectScreen: React.FC = () => {
           </AnimatedView>
 
           {/* Type Cards */}
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, gap: spacing.lg }}>
             <TypeCard
               type="lost"
               icon="alert-circle-outline"

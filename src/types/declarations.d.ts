@@ -12,6 +12,10 @@ declare module '@expo/vector-icons' {
   export class MaterialCommunityIcons extends React.Component<IconProps> {
     static glyphMap: Record<string, number>;
   }
+  
+  export class Ionicons extends React.Component<IconProps> {
+    static glyphMap: Record<string, number>;
+  }
 }
 
 declare module 'react-native-gesture-handler';

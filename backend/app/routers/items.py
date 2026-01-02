@@ -1,13 +1,15 @@
 """
-API routes for lost and found items.
+API routes for lost and found items, authentication, and users.
 """
 
 import uuid
 from pathlib import Path
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, EmailStr
 
 from app import crud, schemas, models
 from app.database import get_db
@@ -400,3 +402,154 @@ def get_item(item_id: int, db: Session = Depends(get_db)) -> schemas.ItemInDBBas
         )
     
     return crud.item_to_response(item)
+
+
+# ===== Authentication & User Management Endpoints =====
+# Mock implementation for demo purposes
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str
+    phone: Optional[str] = None
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    phone: Optional[str] = None
+
+class AuthResponse(BaseModel):
+    success: bool
+    token: str
+    user: UserResponse
+
+class MessageResponse(BaseModel):
+    message: str
+
+class NotificationResponse(BaseModel):
+    id: str
+    type: str
+    title: str
+    message: str
+    created_at: datetime
+    is_read: bool
+    item_id: Optional[str] = None
+
+class NotificationsListResponse(BaseModel):
+    notifications: List[NotificationResponse]
+
+# Mock user data for demo
+MOCK_USER = {
+    "id": "user-1",
+    "email": "demo@mafqood.ae",
+    "full_name": "Demo User",
+    "phone": "+971501234567",
+}
+
+MOCK_TOKEN = "mock-jwt-token-12345"
+
+
+@router.post("/auth/login", response_model=AuthResponse)
+async def login(credentials: LoginRequest, db: Session = Depends(get_db)):
+    """
+    Login endpoint. For demo purposes, accepts any credentials.
+    In production, this would verify against a real user database.
+    """
+    return AuthResponse(
+        success=True,
+        token=MOCK_TOKEN,
+        user=UserResponse(**MOCK_USER)
+    )
+
+
+@router.post("/auth/register", response_model=AuthResponse)
+async def register(user_data: RegisterRequest, db: Session = Depends(get_db)):
+    """
+    Register new user endpoint. For demo purposes, always succeeds.
+    In production, this would create a real user in the database.
+    """
+    new_user = {
+        "id": f"user-{user_data.email}",
+        "email": user_data.email,
+        "full_name": user_data.full_name,
+        "phone": user_data.phone,
+    }
+    
+    return AuthResponse(
+        success=True,
+        token=MOCK_TOKEN,
+        user=UserResponse(**new_user)
+    )
+
+
+@router.post("/auth/logout", response_model=MessageResponse)
+async def logout():
+    """
+    Logout endpoint. For demo purposes, always succeeds.
+    """
+    return MessageResponse(message="Logged out successfully")
+
+
+@router.post("/auth/forgot-password", response_model=MessageResponse)
+async def forgot_password(data: dict):
+    """
+    Forgot password endpoint. For demo purposes, always succeeds.
+    """
+    return MessageResponse(
+        message="If this email is registered, you will receive a reset link shortly."
+    )
+
+
+@router.get("/users/me", response_model=UserResponse)
+async def get_current_user(db: Session = Depends(get_db)):
+    """
+    Get current user profile. For demo purposes, returns mock user.
+    In production, this would get the user from the JWT token.
+    """
+    return UserResponse(**MOCK_USER)
+
+
+@router.put("/users/me", response_model=UserResponse)
+async def update_current_user(
+    update_data: dict,
+    db: Session = Depends(get_db)
+):
+    """
+    Update current user profile. For demo purposes, returns updated mock user.
+    """
+    updated_user = MOCK_USER.copy()
+    if "full_name" in update_data:
+        updated_user["full_name"] = update_data["full_name"]
+    if "phone" in update_data:
+        updated_user["phone"] = update_data["phone"]
+    
+    return UserResponse(**updated_user)
+
+
+@router.get("/notifications", response_model=NotificationsListResponse)
+async def get_notifications(db: Session = Depends(get_db)):
+    """
+    Get user notifications. For demo purposes, returns empty list.
+    """
+    return NotificationsListResponse(notifications=[])
+
+
+@router.post("/notifications/{notification_id}/read", response_model=MessageResponse)
+async def mark_notification_read(notification_id: str, db: Session = Depends(get_db)):
+    """
+    Mark a notification as read. For demo purposes, always succeeds.
+    """
+    return MessageResponse(message="Notification marked as read")
+
+
+@router.post("/notifications/read-all", response_model=MessageResponse)
+async def mark_all_notifications_read(db: Session = Depends(get_db)):
+    """
+    Mark all notifications as read. For demo purposes, always succeeds.
+    """
+    return MessageResponse(message="All notifications marked as read")

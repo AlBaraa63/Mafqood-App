@@ -22,14 +22,16 @@ import {
   ReportReviewScreen,
   ReportSuccessScreen,
 } from '../screens/Report';
-import { MatchesListScreen } from '../screens/Matches/MatchesListScreen';
-import { MatchDetailScreen } from '../screens/Matches/MatchDetailScreen';
+// Using native mobile versions from index files
+import { MatchesListScreen, MatchDetailScreen } from '../screens/Matches';
 import { NotificationsScreen } from '../screens/Notifications';
-import { ProfileScreen } from '../screens/Profile/ProfileScreen';
-import { EditProfileScreen } from '../screens/Profile/EditProfileScreen';
-import { MyReportsScreen } from '../screens/Profile/MyReportsScreen';
-import { ReportDetailScreen } from '../screens/Profile/ReportDetailScreen';
-import { AboutScreen } from '../screens/Profile/AboutScreen';
+import {
+  ProfileScreen,
+  EditProfileScreen,
+  MyReportsScreen,
+  ReportDetailScreen,
+  AboutScreen,
+} from '../screens/Profile';
 import { colors, typography } from '../theme';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();

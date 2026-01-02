@@ -3,3 +3,4 @@
  */
 
 export { storage } from './storage';
+export { logger } from './logger';

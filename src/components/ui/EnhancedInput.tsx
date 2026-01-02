@@ -33,6 +33,7 @@ interface EnhancedInputProps extends TextInputProps {
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
   variant?: 'default' | 'filled' | 'outlined';
+  accessibilityLabelOverride?: string;
 }
 
 export const EnhancedInput: React.FC<EnhancedInputProps> = ({
@@ -47,6 +48,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
   variant = 'outlined',
   onFocus,
   onBlur,
+  accessibilityLabelOverride,
   ...textInputProps
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -151,6 +153,10 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
           placeholderTextColor={colors.neutral[400]}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          accessible={true}
+          accessibilityLabel={accessibilityLabelOverride || label}
+          accessibilityHint={helperText}
+          editable={textInputProps.editable !== false}
         />
 
         {rightIcon && (
