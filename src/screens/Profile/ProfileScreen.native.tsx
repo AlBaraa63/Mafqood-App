@@ -340,12 +340,12 @@ export const ProfileScreen: React.FC = () => {
 
               {/* User Info */}
               <View style={{ flex: 1 }}>
-                <Text style={typography.h3}>{user?.fullName}</Text>
-                <Text style={[typography.bodySmall, { color: colors.text.secondary, marginTop: spacing.xs }]}>
+                <Text style={[typography.h3, { textAlign: 'center' }]}>{user?.fullName}</Text>
+                <Text style={[typography.bodySmall, { color: colors.text.secondary, marginTop: spacing.xs, textAlign: 'center' }]}>
                   {user?.email}
                 </Text>
                 {user?.phone && (
-                  <Text style={[typography.caption, { color: colors.text.tertiary, marginTop: spacing.xs }]}>
+                  <Text style={[typography.caption, { color: colors.text.tertiary, marginTop: spacing.xs, textAlign: 'center' }]}>
                     {user.phone}
                   </Text>
                 )}

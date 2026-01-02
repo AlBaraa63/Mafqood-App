@@ -46,6 +46,7 @@ const TabIcon: React.FC<{ label: string; active?: boolean }> = ({ label, active 
       fontSize: 16,
       color: active ? colors.primary[500] : colors.text.secondary,
       fontWeight: active ? typography.fontWeight.semibold : typography.fontWeight.regular,
+      textAlign: 'center',
     }}
   >
     {label}

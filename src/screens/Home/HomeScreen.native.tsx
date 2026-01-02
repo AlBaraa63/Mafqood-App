@@ -84,14 +84,14 @@ const QuickActionCard: React.FC<QuickActionProps> = ({
   };
 
   return (
-    <Animated.View entering={FadeInDown.delay(delay).springify()}>
+    <Animated.View entering={FadeInDown.delay(delay).springify()} style={{ flex: 1 }}>
       <AnimatedTouchable
         style={[
           {
             backgroundColor: bgColor,
             borderRadius: layout.radiusXl,
             padding: spacing.lg,
-            minWidth: SCREEN_WIDTH * 0.42,
+            flex: 1,
             ...shadows.md,
           },
           animatedStyle,
