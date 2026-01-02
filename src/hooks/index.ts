@@ -6,6 +6,8 @@ export { useAuthStore, useLanguageStore, useReportFormStore, useOnboardingStore 
 export { useResponsive, useResponsiveValue, useResponsiveSpacing, useResponsiveFontSize, useResponsiveGrid } from './useResponsive';
 export { useHaptics } from './useHaptics';
 export { useAnimatedValue, useFadeIn, useScale } from './useAnimatedValue';
+export { useDynamicStyles, dynamicScale } from './useDynamicStyles';
+export type { DynamicTypography, DynamicSpacing, DynamicLayout } from './useDynamicStyles';
 
 import { useCallback } from 'react';
 import { useLanguageStore } from './useStore';

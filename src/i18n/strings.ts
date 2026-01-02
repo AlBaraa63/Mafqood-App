@@ -123,6 +123,11 @@ const en = {
   value_trusted: 'Trusted platform',
   value_trusted_desc: 'Verified and secure',
 
+  // Home - Quick Actions
+  quick_actions: 'Quick Actions',
+  report_lost_desc: 'Lost something? Report it now',
+  report_found_desc: 'Found something? Help return it',
+
   // Home - Recent Items
   recent_items: 'Your Recent Items',
   status_open: 'Open',
@@ -399,6 +404,11 @@ const ar: typeof en = {
   value_free_desc: 'بدون رسوم أو تكاليف خفية',
   value_trusted: 'موثوق بها',
   value_trusted_desc: 'منصة آمنة ومتاحة للجميع',
+
+  // Home - Quick Actions
+  quick_actions: 'إجراءات سريعة',
+  report_lost_desc: 'فقدت شيئاً؟ أبلغ عنه الآن',
+  report_found_desc: 'وجدت شيئاً؟ ساعد في إعادته',
 
   // Home - Recent Items
   recent_items: 'أحدث بلاغاتك',

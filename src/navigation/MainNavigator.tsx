@@ -11,7 +11,8 @@ import {
   ProfileStackParamList,
 } from '../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { HomeScreen } from '../screens/Home/HomeScreen';
+// Using the new native mobile HomeScreen
+import { HomeScreen } from '../screens/Home/HomeScreen.native';
 import {
   ReportTypeSelectScreen,
   ReportPhotoScreen,

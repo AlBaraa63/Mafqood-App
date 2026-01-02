@@ -10,6 +10,7 @@ export { ResponsiveContainer } from './ResponsiveContainer';
 export { EnhancedInput } from './EnhancedInput';
 export { FloatingActionButton } from './FloatingActionButton';
 export { PullToRefresh } from './PullToRefresh';
+export { ProgressStepper } from './ProgressStepper';
 
 // Re-export existing components
 export { default as StatusChip } from './StatusChip';
