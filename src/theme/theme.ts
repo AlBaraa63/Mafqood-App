@@ -6,21 +6,21 @@
 import { Platform } from 'react-native';
 
 export const colors = {
-  // Primary colors (brand)
+  // Primary colors (brand) - Mafqood website theme
   primary: {
     50: 'rgba(40, 179, 163, 0.05)',
     100: 'rgba(40, 179, 163, 0.1)',
     200: 'rgba(40, 179, 163, 0.2)',
     300: 'rgba(40, 179, 163, 0.3)',
     400: 'rgba(40, 179, 163, 0.4)',
-    500: '#28B3A3',    // Teal accent
+    500: '#28B3A3',    // Primary teal accent - website brand color
     600: '#229789',
     700: '#1C7B70',
     800: '#165F57',
-    dark: '#0B2D3A',      // Main dark teal
+    dark: '#0B2D3A',      // Deep teal/navy - main dark brand color
     darkHover: '#0d3847', // Dark teal hover
     accent: '#28B3A3',    // Teal accent
-    accentHover: '#36C2B2', // Teal accent hover
+    accentHover: '#36C2B2', // Light teal hover
     accentLight: 'rgba(40, 179, 163, 0.1)', // Accent with opacity
   },
 
@@ -50,7 +50,7 @@ export const colors = {
     800: '#165F57',
   },
 
-  // Neutral colors
+  // Neutral colors - matching website grays
   neutral: {
     50: '#F9FAFB',
     100: '#F3F4F6',
@@ -59,9 +59,9 @@ export const colors = {
     400: '#9CA3AF',
     500: '#6B7280',
     600: '#4B5563',
-    700: '#2D3748',
-    800: '#1A202C',
-    900: '#0F1419',
+    700: '#374151',
+    800: '#1F2937',
+    900: '#111827',
     white: '#FFFFFF',
     black: '#000000',
   },
@@ -98,8 +98,8 @@ export const colors = {
     errorBg: '#FEE2E2',    // red-100
     warning: '#F59E0B',    // amber-500
     warningBg: '#FEF3C7',  // amber-100
-    info: '#3B82F6',       // blue-500
-    infoBg: '#DBEAFE',     // blue-100
+    info: '#28B3A3',       // teal - matching brand
+    infoBg: 'rgba(40, 179, 163, 0.1)',
   },
 
   // Semantic colors (for compatibility)
@@ -107,7 +107,7 @@ export const colors = {
     success: '#10B981',
     warning: '#F59E0B',
     error: '#EF4444',
-    info: '#3B82F6',
+    info: '#28B3A3',
   },
 
   // Success/warning/error shorthand
@@ -127,9 +127,9 @@ export const colors = {
     dark: '#DC2626',
   },
   info: {
-    light: '#DBEAFE',
-    main: '#3B82F6',
-    dark: '#2563EB',
+    light: 'rgba(40, 179, 163, 0.1)',
+    main: '#28B3A3',
+    dark: '#0B2D3A',
   },
 
   // Match badge colors
