@@ -163,6 +163,16 @@ export const Header: React.FC<HeaderProps> = ({
         )}
       </TouchableOpacity>
 
+      {/* Mafqood Logo */}
+      <Image
+        source={require('../../../assets/icon.png')}
+        style={{
+          width: dimensions.avatarSize * 2.2,
+          height: dimensions.avatarSize * 2.2,
+        }}
+        resizeMode="contain"
+      />
+
       {/* Notification Icon */}
       <TouchableOpacity
         style={[
@@ -204,7 +214,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.xs,
   },
   profileButton: {
     // Dynamic dimensions applied via inline style

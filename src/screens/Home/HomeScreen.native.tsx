@@ -19,6 +19,7 @@ import {
   Dimensions,
   Platform,
   StatusBar,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -439,29 +440,6 @@ export const HomeScreen: React.FC = () => {
           >
             <GlassCard variant="gradient">
               <View style={{ padding: spacing.cardPadding }}>
-                {/* AI Badge */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: colors.accent[500] + '20',
-                    alignSelf: 'flex-start',
-                    paddingHorizontal: spacing.md,
-                    paddingVertical: spacing.xs,
-                    borderRadius: layout.radiusFull,
-                    marginBottom: spacing.md,
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="auto-fix"
-                    size={layout.iconSm}
-                    color={colors.accent[600]}
-                  />
-                  <Text style={[typography.labelSmall, { color: colors.accent[600], marginLeft: spacing.xs }]}>
-                    {t('home_ai_badge')}
-                  </Text>
-                </View>
-
                 {/* Title */}
                 <Text style={[typography.hero, { marginBottom: spacing.sm }]}>
                   {t('home_hero_title')}

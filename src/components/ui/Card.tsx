@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { View, StyleSheet, StyleProp, ViewStyle, Platform } from 'react-native';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
 
 interface Props {
@@ -15,7 +15,7 @@ export const Card: React.FC<Props> = ({ children, style, padded = true, elevated
       style={StyleSheet.flatten([
         styles.base,
         padded && styles.padded,
-        elevated && styles.elevated,
+        elevated && (Platform.OS === 'web' ? styles.elevatedWeb : styles.elevated),
         style,
       ])}
     >
@@ -26,7 +26,7 @@ export const Card: React.FC<Props> = ({ children, style, padded = true, elevated
 
 const styles = StyleSheet.create({
   base: {
-    backgroundColor: colors.background.surface,
+    backgroundColor: colors.background.primary,
     borderRadius: borderRadius.xl,
   },
   padded: {
@@ -35,6 +35,9 @@ const styles = StyleSheet.create({
   elevated: {
     ...shadows.md,
   },
+  elevatedWeb: {
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)',
+  } as any,
 });
 
 export default Card;
