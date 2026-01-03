@@ -31,7 +31,7 @@ function getApiUrl(): string {
   });
 
   // Default fallback
-  const defaultUrl = `http://${localhost}:8000`;
+  const defaultUrl = `http://${localhost}:8001`;
   
   // Try to get from expo config
   let apiUrl = defaultUrl;

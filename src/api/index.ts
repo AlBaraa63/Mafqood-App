@@ -213,9 +213,11 @@ export async function resetDatabase(token?: string | null): Promise<ApiResponse<
 /**
  * Logout current user
  */
-export async function logout(): Promise<ApiResponse<void>> {
+export async function logout(refreshToken?: string): Promise<ApiResponse<void>> {
   try {
-    await post(API_ENDPOINTS.logout);
+    if (refreshToken) {
+      await post(API_ENDPOINTS.logout, { refresh_token: refreshToken });
+    }
     return { success: true };
   } catch (error: any) {
     // Even if backend fails, we still clear local session

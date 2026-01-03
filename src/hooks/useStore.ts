@@ -16,6 +16,7 @@ interface AuthStore extends AuthState {
   // Actions
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
+  setRefreshToken: (refreshToken: string | null) => void;
   setIsGuest: (isGuest: boolean) => void;
   setLoading: (loading: boolean) => void;
   
@@ -30,12 +31,14 @@ interface AuthStore extends AuthState {
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   token: null,
+  refreshToken: null,
   isGuest: false,
   isLoading: true,
   isAuthenticated: false,
   
   setUser: (user) => set({ user, isAuthenticated: !!user }),
   setToken: (token) => set({ token }),
+  setRefreshToken: (refreshToken) => set({ refreshToken }),
   setIsGuest: (isGuest) => set({ isGuest }),
   setLoading: (isLoading) => set({ isLoading }),
   
@@ -44,9 +47,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const response = await api.login({ email, password });
       if (response.success && response.data) {
-        const { user, token } = response.data;
+        const { user, token, refresh_token } = response.data;
         await storage.setItem('authToken', token);
-        set({ user, token, isAuthenticated: true, isGuest: false, isLoading: false });
+        if (refresh_token) {
+          await storage.setItem('refreshToken', refresh_token);
+        }
+        set({ user, token, refreshToken: refresh_token || null, isAuthenticated: true, isGuest: false, isLoading: false });
         return true;
       }
       set({ isLoading: false });
@@ -62,9 +68,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const response = await api.register(data);
       if (response.success && response.data) {
-        const { user, token } = response.data;
+        const { user, token, refresh_token } = response.data;
         await storage.setItem('authToken', token);
-        set({ user, token, isAuthenticated: true, isGuest: false, isLoading: false });
+        if (refresh_token) {
+          await storage.setItem('refreshToken', refresh_token);
+        }
+        set({ user, token, refreshToken: refresh_token || null, isAuthenticated: true, isGuest: false, isLoading: false });
         return true;
       }
       set({ isLoading: false });
@@ -76,36 +85,43 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
   
   logout: async () => {
+    const { refreshToken } = get();
     await storage.deleteItem('authToken');
-    await api.logout();
-    set({ user: null, token: null, isAuthenticated: false, isGuest: false });
+    await storage.deleteItem('refreshToken');
+    if (refreshToken) {
+      await api.logout(refreshToken);
+    }
+    set({ user: null, token: null, refreshToken: null, isAuthenticated: false, isGuest: false });
   },
   
   loginAsGuest: () => {
-    set({ isGuest: true, isAuthenticated: false, user: null, token: null, isLoading: false });
+    set({ isGuest: true, isAuthenticated: false, user: null, token: null, refreshToken: null, isLoading: false });
   },
   
   checkAuth: async () => {
     set({ isLoading: true });
     try {
       const token = await storage.getItem('authToken');
+      const refreshToken = await storage.getItem('refreshToken');
       if (token) {
         // Validate token with backend
         const response = await api.getProfile(token);
         if (response.success && response.data) {
-          set({ user: response.data, token, isAuthenticated: true, isLoading: false });
+          set({ user: response.data, token, refreshToken, isAuthenticated: true, isLoading: false });
           return;
         }
         // Token is invalid or expired, clear it
         await storage.deleteItem('authToken');
+        await storage.deleteItem('refreshToken');
       }
       // No token or invalid token - user needs to login
-      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+      set({ user: null, token: null, refreshToken: null, isAuthenticated: false, isLoading: false });
     } catch (error) {
       console.error('Auth check failed:', error);
       // Clear invalid token on error
       await storage.deleteItem('authToken');
-      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+      await storage.deleteItem('refreshToken');
+      set({ user: null, token: null, refreshToken: null, isAuthenticated: false, isLoading: false });
     }
   },
 }));
