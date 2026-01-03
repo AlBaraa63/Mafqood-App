@@ -227,6 +227,7 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
     haptics.light();
     if (currentIndex < slides.length - 1) {
       const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex); // Update state immediately
       flatListRef.current?.scrollToOffset({ offset: nextIndex * width, animated: true });
     }
   }, [haptics, currentIndex]);

@@ -24,7 +24,7 @@ export const ReportSuccessScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProps>();
-  const { type, item, matchCount } = route.params;
+  const { type, item, matchCount, aiError } = route.params;
   
   const isLost = type === 'lost';
   
@@ -75,6 +75,14 @@ export const ReportSuccessScreen: React.FC = () => {
         <Text style={styles.message}>
           {isLost ? t('success_lost_message') : t('success_found_message')}
         </Text>
+        
+        {/* AI Warning */}
+        {aiError && (
+          <View style={styles.warningBanner}>
+            <Text style={styles.warningIcon}>⚠️</Text>
+            <Text style={styles.warningText}>{aiError}</Text>
+          </View>
+        )}
         
         {/* Match Count */}
         {matchCount > 0 && (
@@ -169,6 +177,26 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.semibold,
     color: colors.accent[700],
+  },
+  warningBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.warning[50],
+    borderWidth: 1,
+    borderColor: colors.warning[200],
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  warningIcon: {
+    fontSize: 20,
+    marginRight: spacing.sm,
+  },
+  warningText: {
+    flex: 1,
+    fontSize: typography.fontSize.sm,
+    color: colors.warning[700],
+    lineHeight: typography.fontSize.sm * typography.lineHeight.normal,
   },
   itemPreview: {
     width: '100%',

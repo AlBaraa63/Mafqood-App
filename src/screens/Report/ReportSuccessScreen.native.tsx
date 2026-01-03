@@ -175,22 +175,14 @@ export const ReportSuccessScreen: React.FC = () => {
 
   const handleViewMatches = () => {
     haptics.selection();
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'ReportTypeSelect' as any }],
-      })
-    );
+    // Navigate to the Matches tab in the main navigator
+    navigation.getParent()?.navigate('MatchesTab' as never);
   };
 
   const handleGoHome = () => {
     haptics.selection();
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'ReportTypeSelect' as any }],
-      })
-    );
+    // Navigate to the Home tab in the main navigator
+    navigation.getParent()?.navigate('HomeTab' as never);
   };
 
   // Generate confetti particles

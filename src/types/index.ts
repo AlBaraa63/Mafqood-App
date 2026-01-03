@@ -137,6 +137,8 @@ export interface PaginatedResponse<T> {
 export interface ItemSubmitResponse {
   item: Item;
   matches: Match[];
+  match_count?: number;
+  ai_error?: string | null;
 }
 
 export interface HistoryResponse {
@@ -178,8 +180,11 @@ export interface BackendItem {
 }
 
 export interface BackendMatchResult {
-  item: BackendItem;
-  similarity: number; // 0.0 to 1.0
+  matched_item: BackendItem; // Backend sends "matched_item" not "item"
+  similarity: number; // 0.0 to 1.0 (float from backend)
+  confidence: string;
+  status: string;
+  created_at: string;
 }
 
 export interface BackendItemWithMatches {
@@ -240,7 +245,7 @@ export type ReportStackParamList = {
   ReportWhenWhere: { type: ItemType; imageUri: string; details: Partial<ItemFormData> };
   ReportContact: { type: ItemType; imageUri: string; details: Partial<ItemFormData> };
   ReportReview: { formData: ItemFormData };
-  ReportSuccess: { type: ItemType; item: Item; matchCount: number };
+  ReportSuccess: { type: ItemType; item: Item; matchCount: number; aiError?: string | null };
 };
 
 export type MatchesStackParamList = {

@@ -110,7 +110,7 @@ export const MainNavigator: React.FC = () => {
           const iconMap: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
             HomeTab: 'home-variant-outline',
             ReportTab: 'clipboard-text-outline',
-            MatchesTab: 'sparkles',
+            MatchesTab: 'star-four-points-outline',
             ProfileTab: 'account-circle-outline',
           };
           const name = iconMap[route.name] || 'circle-outline';

@@ -50,6 +50,39 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
         await init_db()
         logger.info("Database tables created (development mode)")
     
+    # Check AI services health
+    try:
+        from app.services.ai import ObjectDetector, FeatureExtractor
+        
+        detector = ObjectDetector()
+        extractor = FeatureExtractor()
+        
+        ai_enabled = detector.model is not None and extractor.model is not None
+        
+        if ai_enabled:
+            logger.info(
+                "✅ AI services initialized successfully",
+                yolo_model=settings.yolo_model_path,
+                embedding_model=settings.embedding_model,
+            )
+        else:
+            if detector.model is None:
+                logger.warning("⚠️ Object detection disabled - YOLO model failed to load")
+            if extractor.model is None:
+                logger.warning("⚠️ Feature extraction disabled - Embedding model failed to load")
+            logger.warning("AI matching will not be available - items will be created but not matched")
+    except ImportError as e:
+        logger.error(
+            "❌ AI dependencies missing - matching disabled",
+            error=str(e),
+        )
+    except Exception as e:
+        logger.error(
+            "❌ AI services initialization failed",
+            error=str(e),
+            error_type=type(e).__name__,
+        )
+    
     yield
     
     # Shutdown

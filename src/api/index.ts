@@ -119,19 +119,25 @@ function transformBackendItem(backendItem: BackendItem, currentUserId?: string):
 /**
  * Transform backend match result to frontend format
  */
-function transformBackendMatch(backendMatch: BackendMatchResult): Match {
-  const matchedItem = transformBackendItem(backendMatch.item);
+function transformBackendMatch(backendMatch: BackendMatchResult): Match | null {
+  // Safety check: ensure matched_item exists
+  if (!backendMatch.matched_item || !backendMatch.matched_item.id) {
+    console.warn('[API] Invalid match data - missing matched_item:', backendMatch);
+    return null;
+  }
+  
+  const matchedItem = transformBackendItem(backendMatch.matched_item);
   const similarityPercent = backendMatch.similarity * 100; // Convert 0-1 to 0-100
   
   return {
-    id: `match-${backendMatch.item.id}`,
+    id: `match-${backendMatch.matched_item.id}`,
     userItemId: '', // Will be set by caller
-    matchedItemId: String(backendMatch.item.id),
+    matchedItemId: String(backendMatch.matched_item.id),
     userItem: matchedItem, // Placeholder, will be filled by caller
     matchedItem,
     similarity: similarityPercent,
     confidence: getConfidenceFromSimilarity(similarityPercent),
-    createdAt: backendMatch.item.created_at,
+    createdAt: backendMatch.matched_item.created_at,
   };
 }
 
@@ -140,12 +146,14 @@ function transformBackendMatch(backendMatch: BackendMatchResult): Match {
  */
 function transformBackendItemWithMatches(backendItemWithMatches: BackendItemWithMatches): MatchGroup {
   const item = transformBackendItem(backendItemWithMatches.item);
-  const matches = backendItemWithMatches.matches.map(m => {
-    const match = transformBackendMatch(m);
-    match.userItemId = item.id;
-    match.userItem = item;
-    return match;
-  });
+  const matches = backendItemWithMatches.matches
+    .map(m => transformBackendMatch(m))
+    .filter((match): match is Match => match !== null) // Filter out null matches
+    .map(match => {
+      match.userItemId = item.id;
+      match.userItem = item;
+      return match;
+    });
   
   return {
     item,

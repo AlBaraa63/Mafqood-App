@@ -93,6 +93,7 @@ export const ReportReviewScreen: React.FC = () => {
           type: formData.type,
           item: response.data.item,
           matchCount: response.data.matches.length,
+          aiError: response.data.ai_error,
         });
       } else {
         Alert.alert(

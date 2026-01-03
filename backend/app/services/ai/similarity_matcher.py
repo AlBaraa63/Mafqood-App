@@ -47,25 +47,25 @@ class SimilarityMatcher:
     - Time proximity
     """
     
-    # Scoring weights
+    # Scoring weights (Production-tuned for real-world matching)
     WEIGHTS = {
-        "visual": 0.50,
-        "category": 0.15,
-        "color": 0.10,
-        "brand": 0.05,
-        "location": 0.15,
-        "time": 0.05,
+        "visual": 0.65,  # Visual similarity is most important - same item looks similar
+        "category": 0.15,  # Category helps but AI can misclassify
+        "color": 0.08,    # Color useful but lighting varies
+        "brand": 0.02,    # Brand least important - often unknown
+        "location": 0.07, # Location matters but people travel
+        "time": 0.03,     # Time matters but items found weeks later
     }
     
-    # Thresholds
-    MIN_VISUAL_SIMILARITY = 0.15  # Lowered for better matching
-    MIN_FINAL_SCORE = 0.4  # Lowered to catch more potential matches
-    MAX_LOCATION_DISTANCE_KM = 50
-    MAX_TIME_DIFFERENCE_DAYS = 30
+    # Thresholds (Production-optimized to catch real matches)
+    MIN_VISUAL_SIMILARITY = 0.10  # Very permissive - let weighted score decide
+    MIN_FINAL_SCORE = 0.25  # Lower threshold catches more genuine matches
+    MAX_LOCATION_DISTANCE_KM = 100  # Increased - people travel across cities
+    MAX_TIME_DIFFERENCE_DAYS = 60  # Increased - items found weeks/months later
     
-    # Confidence thresholds
-    HIGH_CONFIDENCE = 0.80
-    MEDIUM_CONFIDENCE = 0.60
+    # Confidence thresholds (Realistic for production)
+    HIGH_CONFIDENCE = 0.70  # Lowered - was too strict
+    MEDIUM_CONFIDENCE = 0.45
     
     def __init__(self):
         logger.info("SimilarityMatcher initialized", weights=self.WEIGHTS)

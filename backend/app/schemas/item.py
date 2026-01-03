@@ -262,6 +262,7 @@ class ItemResponse(BaseModel):
     
     # AI data (optional, included based on context)
     ai_category: Optional[str] = Field(None, description="AI-detected category")
+    ai_processed: Optional[bool] = Field(None, description="Whether AI processing completed")
     detected_objects: Optional[List[DetectedObject]] = Field(
         None,
         description="AI-detected objects"

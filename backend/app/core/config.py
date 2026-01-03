@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     # ===== AI/ML =====
     yolo_model_path: str = "./models/yolov8n.pt"
     embedding_model: str = "resnet50"
-    min_match_similarity: float = 0.5
+    min_match_similarity: float = 0.25  # Production-optimized: catches real matches
     
     # ===== Celery =====
     celery_broker_url: str = "redis://localhost:6379/1"
