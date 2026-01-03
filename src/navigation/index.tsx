@@ -10,12 +10,12 @@ const navigationTheme: Theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: colors.primary[500],
+    primary: colors.primary.accent,
     background: colors.background.primary,
-    card: colors.neutral.white,
+    card: colors.background.primary,
     text: colors.text.primary,
-    border: colors.neutral[200],
-    notification: colors.accent[500],
+    border: colors.border.light,
+    notification: colors.primary.accent,
   },
 };
 

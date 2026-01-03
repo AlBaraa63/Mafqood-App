@@ -21,8 +21,8 @@ interface AuthStore extends AuthState {
   setLoading: (loading: boolean) => void;
   
   // Auth Operations
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (data: { fullName: string; email: string; phone: string; password: string; isVenue?: boolean }) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (data: { fullName: string; email: string; phone: string; password: string; isVenue?: boolean }) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   loginAsGuest: () => void;
   checkAuth: () => Promise<void>;
@@ -53,13 +53,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           await storage.setItem('refreshToken', refresh_token);
         }
         set({ user, token, refreshToken: refresh_token || null, isAuthenticated: true, isGuest: false, isLoading: false });
-        return true;
+        return { success: true };
       }
       set({ isLoading: false });
-      return false;
-    } catch (error) {
+      return { success: false, error: response.error || 'Login failed. Please check your credentials.' };
+    } catch (error: any) {
       set({ isLoading: false });
-      return false;
+      return { success: false, error: error.message || 'An unexpected error occurred' };
     }
   },
   
@@ -74,13 +74,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           await storage.setItem('refreshToken', refresh_token);
         }
         set({ user, token, refreshToken: refresh_token || null, isAuthenticated: true, isGuest: false, isLoading: false });
-        return true;
+        return { success: true };
       }
       set({ isLoading: false });
-      return false;
-    } catch (error) {
+      return { success: false, error: response.error || 'Registration failed. Please try again.' };
+    } catch (error: any) {
       set({ isLoading: false });
-      return false;
+      return { success: false, error: error.message || 'An unexpected error occurred' };
     }
   },
   

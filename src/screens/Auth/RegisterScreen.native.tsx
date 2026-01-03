@@ -159,7 +159,7 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    const success = await register({
+    const result = await register({
       fullName,
       email,
       phone,
@@ -167,9 +167,12 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       isVenue,
     });
 
-    if (!success) {
+    if (!result.success) {
       haptics.error();
-      Alert.alert(t('error_generic'), t('error_generic'));
+      Alert.alert(
+        t('registration_failed') || 'Registration Failed',
+        result.error || t('error_generic') || 'An error occurred. Please try again.'
+      );
     } else {
       haptics.success();
     }

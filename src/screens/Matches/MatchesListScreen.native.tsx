@@ -347,6 +347,38 @@ const MatchListItem: React.FC<MatchListItemProps> = ({ matchGroup, onPress, isFi
               </Text>
             </View>
           )}
+          
+          {/* Show pending status only for items not yet processed by AI */}
+          {!topMatch && item.aiProcessed === false && (
+            <View style={styles.matchInfo}>
+              <View style={[
+                styles.confidenceIndicator,
+                { backgroundColor: colors.accent[500] }
+              ]} />
+              <Text style={[
+                styles.confidenceText,
+                { color: colors.accent[500] }
+              ]}>
+                {t('pending_ai_analysis') || 'Pending AI analysis...'}
+              </Text>
+            </View>
+          )}
+          
+          {/* Show "No matches" for processed items with no matches */}
+          {!topMatch && item.aiProcessed === true && (
+            <View style={styles.matchInfo}>
+              <View style={[
+                styles.confidenceIndicator,
+                { backgroundColor: colors.text.tertiary }
+              ]} />
+              <Text style={[
+                styles.confidenceText,
+                { color: colors.text.tertiary }
+              ]}>
+                {t('no_matches_yet') || 'No matches yet'}
+              </Text>
+            </View>
+          )}
         </View>
         
         {/* Disclosure Indicator (iOS style) */}
@@ -373,7 +405,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title, count }) => {
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionHeaderText}>{title}</Text>
-      <Text style={styles.sectionHeaderCount}>{count} {count === 1 ? 'match' : 'matches'}</Text>
+      <Text style={styles.sectionHeaderCount}>{count} {count === 1 ? 'item' : 'items'}</Text>
     </View>
   );
 };
@@ -476,6 +508,9 @@ export const MatchesListScreen: React.FC = () => {
   // Filter data
   const filteredData = useMemo(() => {
     if (filterType === 'all') return currentData;
+    if (filterType === 'pending') {
+      return currentData.filter(group => group.matches.length === 0);
+    }
     return currentData.filter(group => {
       const topMatch = group.matches[0];
       return topMatch && topMatch.confidence === filterType;
@@ -488,6 +523,7 @@ export const MatchesListScreen: React.FC = () => {
       high: filteredData.filter(g => g.matches[0]?.confidence === 'high'),
       medium: filteredData.filter(g => g.matches[0]?.confidence === 'medium'),
       low: filteredData.filter(g => g.matches[0]?.confidence === 'low'),
+      pending: filteredData.filter(g => g.matches.length === 0),
     };
 
     const sections = [];
@@ -512,13 +548,23 @@ export const MatchesListScreen: React.FC = () => {
         confidence: 'low' as const
       });
     }
+    // Show items waiting for AI matching
+    if (grouped.pending.length > 0) {
+      sections.push({ 
+        title: t('pending_matches') || 'Awaiting AI Matching', 
+        data: grouped.pending,
+        confidence: 'pending' as const
+      });
+    }
 
     return sections;
   }, [filteredData, t]);
 
   // Calculate statistics
   const stats = useMemo(() => {
-    // Only count items that actually have matches
+    // Count all items (regardless of whether they have matches)
+    const totalItems = currentData.length;
+    // Only count items that actually have matches for match-related stats
     const itemsWithMatches = currentData.filter(group => group.matches.length > 0);
     const totalMatches = itemsWithMatches.reduce((sum, group) => sum + group.matches.length, 0);
     const highConfidence = itemsWithMatches.filter(group =>
@@ -534,7 +580,7 @@ export const MatchesListScreen: React.FC = () => {
       : 0;
 
     return {
-      total: itemsWithMatches.length,
+      total: totalItems,
       matches: totalMatches,
       high: highConfidence,
       avgConfidence,

@@ -97,20 +97,22 @@ function transformBackendItem(backendItem: BackendItem, currentUserId?: string):
   return {
     id: String(backendItem.id),
     type: backendItem.type,
-    status: 'open',
+    status: backendItem.status || 'open',
     title: backendItem.title,
     description: backendItem.description || undefined,
     category,
     imageUrl: backendItem.image_url.startsWith('http') 
       ? backendItem.image_url 
       : `${API_BASE_URL}/${backendItem.image_url.replace(/^\/+/, '')}`,
-    location: backendItem.location_type,
+    location: backendItem.location || backendItem.location_type || '',
     locationDetail: backendItem.location_detail || undefined,
-    dateTime: backendItem.time_frame,
-    contactMethod: 'in_app',
-    userId: currentUserId || String(backendItem.id), // Use actual user ID or item ID as fallback
+    dateTime: backendItem.date_time,
+    contactMethod: backendItem.contact_method || 'in_app',
+    userId: backendItem.user_id || currentUserId || String(backendItem.id),
     createdAt: backendItem.created_at,
     updatedAt: backendItem.created_at,
+    aiProcessed: backendItem.ai_processed,
+    aiCategory: backendItem.ai_category,
   };
 }
 
@@ -179,9 +181,18 @@ export async function login(credentials: LoginCredentials): Promise<ApiResponse<
  */
 export async function register(data: RegisterData): Promise<ApiResponse<{ user: User; token: string }>> {
   try {
+    // Convert camelCase to snake_case for backend
+    const backendData = {
+      email: data.email,
+      password: data.password,
+      full_name: data.fullName,
+      phone: data.phone,
+      is_venue: data.isVenue || false,
+    };
+    
     const response = await post<{ user: User; token: string }>(
       API_ENDPOINTS.register,
-      data
+      backendData
     );
     return {
       success: true,
@@ -282,14 +293,17 @@ export async function createLostItem(formData: ItemFormData, token?: string | nu
     const filename = uri.split('/').pop() || 'photo.jpg';
     const file = await prepareImageForUpload(uri, filename);
     
-    form.append('file', file);
+    form.append('image', file);
     
     // Add required fields
     form.append('title', formData.title);
-    form.append('location_type', formData.location);
-    form.append('time_frame', formData.dateTime);
+    form.append('location', formData.location);
+    form.append('date_time', formData.dateTime);
     
     // Add optional fields
+    if (formData.location) {
+      form.append('location_type', formData.location);
+    }
     if (formData.description) {
       form.append('description', formData.description);
     }
@@ -371,14 +385,17 @@ export async function createFoundItem(formData: ItemFormData, token?: string | n
     const filename = uri.split('/').pop() || 'photo.jpg';
     const file = await prepareImageForUpload(uri, filename);
     
-    form.append('file', file);
+    form.append('image', file);
     
     // Add required fields
     form.append('title', formData.title);
-    form.append('location_type', formData.location);
-    form.append('time_frame', formData.dateTime);
+    form.append('location', formData.location);
+    form.append('date_time', formData.dateTime);
     
     // Add optional fields
+    if (formData.location) {
+      form.append('location_type', formData.location);
+    }
     if (formData.description) {
       form.append('description', formData.description);
     }
@@ -683,7 +700,7 @@ interface UserStats {
 export async function getUserStats(): Promise<ApiResponse<UserStats>> {
   try {
     // Fetch user's items history to calculate stats
-    const historyResponse = await get<BackendHistoryResponse>('/api/history');
+    const historyResponse = await get<BackendHistoryResponse>(API_ENDPOINTS.history);
     
     const totalReports = historyResponse.lost_items.length + historyResponse.found_items.length;
     

@@ -75,6 +75,8 @@ export interface Item {
   userId: string;
   createdAt: string;
   updatedAt: string;
+  aiProcessed?: boolean; // AI analysis completion status
+  aiCategory?: string; // AI-detected category
 }
 
 export interface ItemFormData {
@@ -146,15 +148,33 @@ export interface HistoryResponse {
 
 // Backend types (matching Python Pydantic schemas)
 export interface BackendItem {
-  id: number;
+  id: string;
+  user_id: string;
   type: 'lost' | 'found';
+  status: string;
   title: string;
   description: string | null;
-  location_type: string;
-  location_detail: string | null;
-  time_frame: string;
+  category: string | null;
+  brand: string | null;
+  color: string | null;
   image_url: string;
+  thumbnail_url: string | null;
+  location: string;
+  location_detail: string | null;
+  location_type: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  date_time: string;
   created_at: string;
+  contact_method: string;
+  contact_phone: string | null;
+  contact_email: string | null;
+  view_count: number;
+  match_count: number;
+  ai_processed: boolean;
+  ai_category: string | null;
+  detected_objects: string | null;
+  owner: any | null;
 }
 
 export interface BackendMatchResult {

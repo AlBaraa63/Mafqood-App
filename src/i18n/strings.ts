@@ -23,6 +23,9 @@ const en = {
   loading: 'Loading...',
   error_generic: 'Something went wrong. Please try again.',
   required_field: 'This field is required',
+  login_failed: 'Login Failed',
+  registration_failed: 'Registration Failed',
+  password_requirements: 'Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number',
 
   // Language
   language: 'Language',
@@ -240,6 +243,11 @@ const en = {
   similarity: 'Similarity',
   matches_more_count: '+{count} more potential matches',
   match_explanation: 'Matched based on image similarity and location.',
+  pending_matches: 'Awaiting AI Matching',
+  pending_ai_analysis: 'Pending AI analysis...',
+  high_confidence: 'High Confidence',
+  medium_confidence: 'Medium Confidence',
+  low_confidence: 'Possible Matches',
 
   // Match Detail
   match_detail_title: 'Match Details',
@@ -324,6 +332,9 @@ const ar: typeof en = {
   loading: 'جاري التحميل...',
   error_generic: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.',
   required_field: 'هذه الخانة مطلوبة',
+  login_failed: 'فشل تسجيل الدخول',
+  registration_failed: 'فشل التسجيل',
+  password_requirements: 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل مع حرف كبير وحرف صغير ورقم',
 
   // Language
   language: 'اللغة',
@@ -541,6 +552,11 @@ const ar: typeof en = {
   similarity: 'درجة التشابه',
   matches_more_count: '+{count} تطابق إضافي',
   match_explanation: 'تم التطابق بناءً على الصورة والموقع.',
+  pending_matches: 'في انتظار الذكاء الاصطناعي',
+  pending_ai_analysis: 'قيد التحليل...',
+  high_confidence: 'ثقة عالية',
+  medium_confidence: 'ثقة متوسطة',
+  low_confidence: 'تطابقات محتملة',
 
   // Match Detail
   match_detail_title: 'تفاصيل التطابق',
