@@ -4,9 +4,10 @@ SQLAlchemy ORM models for Dubai AI Lost & Found.
 
 import json
 from datetime import datetime
-from typing import List
+from typing import List, Optional, TYPE_CHECKING
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
 import enum
 
 from app.database import Base
@@ -16,6 +17,42 @@ class ItemType(str, enum.Enum):
     """Enum for item type."""
     LOST = "lost"
     FOUND = "found"
+
+
+class User(Base):
+    """
+    Represents a user in the system.
+    
+    Attributes:
+        id: Primary key
+        email: User's email address (unique)
+        hashed_password: Bcrypt hashed password
+        full_name: User's full name
+        phone: User's phone number (optional)
+        is_active: Whether the user account is active
+        is_verified: Whether the user's email is verified
+        created_at: Timestamp of when the user registered
+        updated_at: Timestamp of last profile update
+        items: Relationship to user's reported items
+    """
+    
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    full_name = Column(String, nullable=False)
+    phone = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True, nullable=False)
+    is_verified = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationship to items
+    items = relationship("Item", back_populates="user", lazy="dynamic")
+    
+    def __repr__(self) -> str:
+        return f"<User(id={self.id}, email={self.email}, full_name={self.full_name})>"
 
 
 class Item(Base):
@@ -32,6 +69,7 @@ class Item(Base):
         time_frame: When the item was lost/found (today, yesterday, etc.)
         image_path: Relative path to the stored image file
         embedding_json: JSON string of the image embedding vector
+        user_id: Foreign key to the user who reported the item (optional)
         created_at: Timestamp of when the record was created
     """
     
@@ -46,7 +84,11 @@ class Item(Base):
     time_frame = Column(String, nullable=False)
     image_path = Column(String, nullable=False)
     embedding_json = Column(Text, nullable=False)  # Stored as JSON string
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    
+    # Relationship to user
+    user = relationship("User", back_populates="items")
     
     def get_embedding(self) -> List[float]:
         """

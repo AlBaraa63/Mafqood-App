@@ -427,7 +427,7 @@ export const MatchesListScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
   const haptics = useHaptics();
-  const { isGuest } = useAuthStore();
+  const { isGuest, token } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState<TabType>('lost');
   const [filterType, setFilterType] = useState<FilterType>('all');
@@ -438,7 +438,7 @@ export const MatchesListScreen: React.FC = () => {
 
   const loadMatches = useCallback(async () => {
     try {
-      const response = await api.getMatches();
+      const response = await api.getMatches(token);
       if (response.success && response.data) {
         setLostMatches(response.data.lostMatches || []);
         setFoundMatches(response.data.foundMatches || []);
@@ -518,35 +518,39 @@ export const MatchesListScreen: React.FC = () => {
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const data = currentData;
-    const totalMatches = data.reduce((sum, group) => sum + group.matches.length, 0);
-    const highConfidence = data.filter(group =>
+    // Only count items that actually have matches
+    const itemsWithMatches = currentData.filter(group => group.matches.length > 0);
+    const totalMatches = itemsWithMatches.reduce((sum, group) => sum + group.matches.length, 0);
+    const highConfidence = itemsWithMatches.filter(group =>
       group.matches.some(m => m.confidence === 'high')
     ).length;
-    const avgConfidence = data.length > 0
+    const avgConfidence = itemsWithMatches.length > 0
       ? Math.round(
-          data.reduce((sum, group) => {
+          itemsWithMatches.reduce((sum, group) => {
             const topMatch = group.matches[0];
             return sum + (topMatch?.similarity || 0);
-          }, 0) / data.length
+          }, 0) / itemsWithMatches.length
         )
       : 0;
 
     return {
-      total: data.length,
+      total: itemsWithMatches.length,
       matches: totalMatches,
       high: highConfidence,
       avgConfidence,
     };
   }, [currentData]);
 
-  // Filter counts
-  const filterCounts = useMemo(() => ({
-    all: currentData.length,
-    high: currentData.filter(g => g.matches[0]?.confidence === 'high').length,
-    medium: currentData.filter(g => g.matches[0]?.confidence === 'medium').length,
-    low: currentData.filter(g => g.matches[0]?.confidence === 'low').length,
-  }), [currentData]);
+  // Filter counts - only count items that have matches
+  const filterCounts = useMemo(() => {
+    const itemsWithMatches = currentData.filter(g => g.matches.length > 0);
+    return {
+      all: itemsWithMatches.length,
+      high: itemsWithMatches.filter(g => g.matches[0]?.confidence === 'high').length,
+      medium: itemsWithMatches.filter(g => g.matches[0]?.confidence === 'medium').length,
+      low: itemsWithMatches.filter(g => g.matches[0]?.confidence === 'low').length,
+    };
+  }, [currentData]);
 
   const lostCount = lostMatches.reduce((acc, mg) => acc + mg.matches.length, 0);
   const foundCount = foundMatches.reduce((acc, mg) => acc + mg.matches.length, 0);

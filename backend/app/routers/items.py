@@ -1,5 +1,5 @@
 """
-API routes for lost and found items, authentication, and users.
+API routes for lost and found items.
 """
 
 import uuid
@@ -15,13 +15,8 @@ from app import crud, schemas, models
 from app.database import get_db
 from app.ai_services import process_image_for_report
 from app.embeddings import get_image_embedding_async, find_top_matches
-from app.config import (
-    LOST_DIR,
-    FOUND_DIR,
-    ALLOWED_EXTENSIONS,
-    MAX_IMAGE_SIZE,
-    TOP_K_MATCHES,
-)
+from app.config import LOST_DIR, FOUND_DIR
+from app.constants import ALLOWED_EXTENSIONS, MAX_IMAGE_SIZE, TOP_K_MATCHES
 
 
 router = APIRouter(prefix="/api", tags=["items"])

@@ -16,7 +16,7 @@ import torch.nn as nn
 from torchvision import models, transforms
 from PIL import Image
 
-from app.config import MODEL_NAME, EMBEDDING_DIM
+from app.constants import MODEL_NAME, EMBEDDING_DIM
 
 # Thread pool for CPU-intensive operations
 _executor = ThreadPoolExecutor(max_workers=2)

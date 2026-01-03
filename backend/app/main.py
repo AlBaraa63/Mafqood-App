@@ -1,13 +1,20 @@
 """
 Dubai AI Lost & Found - FastAPI Main Application
+
+Production-ready backend with:
+- API versioning (/api/v1/)
+- Service layer architecture
+- Proper error handling
+- User-item relationships
 """
 
 from datetime import datetime
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 
 from app.config import (
     PROJECT_NAME,
@@ -17,8 +24,8 @@ from app.config import (
     MEDIA_ROOT,
 )
 from app.database import init_db
-from app.routers import items
-from app import ai_services # Import to ensure models are loaded
+from app.routers import items, auth, notifications
+from app import ai_services  # Import to ensure models are loaded
 from app import schemas
 
 
@@ -47,11 +54,28 @@ app = FastAPI(
 )
 
 
+# ===== Global Exception Handler =====
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """
+    Global exception handler for consistent error responses.
+    """
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": str(exc),
+            "detail": "An unexpected error occurred. Please try again later.",
+        },
+    )
+
+
 # ===== CORS Middleware =====
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all origins for competition demo
+    allow_origins=["*"],  # Allow all origins for development/demo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -64,9 +88,18 @@ app.add_middleware(
 app.mount("/media", StaticFiles(directory=str(MEDIA_ROOT)), name="media")
 
 
-# ===== Routers =====
+# ===== API v1 Routers =====
 
-app.include_router(items.router)
+# Auth routes (no version prefix for compatibility)
+app.include_router(auth.router)
+
+# API v1 routes
+app.include_router(items.router, prefix="/api/v1")
+app.include_router(notifications.router, prefix="/api/v1")
+
+# Legacy routes (for backward compatibility with frontend)
+app.include_router(items.router, prefix="/api", include_in_schema=False)
+app.include_router(notifications.router, prefix="/api", include_in_schema=False)
 
 
 # ===== Root Endpoints =====
@@ -85,7 +118,8 @@ async def root():
             "docs": "/docs",
             "redoc": "/redoc",
             "health": "/health",
-            "api": "/api",
+            "api_v1": "/api/v1",
+            "api_legacy": "/api",
         },
     }
 
@@ -105,16 +139,19 @@ async def health_check() -> schemas.HealthResponse:
 @app.delete("/api/reset", tags=["admin"])
 async def reset_database():
     """
-    Clear all items from the database. Use for testing/demos.
+    Clear all items from the database. Use for testing/demos only.
     """
-    from app.database import SessionLocal
+    from app.database import SessionLocal, get_db
     from app.models import Item
     
     db = SessionLocal()
     try:
         count = db.query(Item).delete()
         db.commit()
-        return {"message": f"Database cleared successfully. Deleted {count} items."}
+        return {
+            "success": True,
+            "message": f"Database cleared successfully. Deleted {count} items.",
+        }
     finally:
         db.close()
 

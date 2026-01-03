@@ -18,7 +18,7 @@ import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-naviga
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button, Stepper, Loading } from '../../components/common';
 import { useTranslation, useFormatDate } from '../../hooks';
-import { useReportFormStore } from '../../hooks/useStore';
+import { useReportFormStore, useAuthStore } from '../../hooks/useStore';
 import { ReportStackParamList, ItemFormData, ContactMethod, ItemCategory } from '../../types';
 import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
 import api from '../../api';
@@ -51,6 +51,7 @@ export const ReportReviewScreen: React.FC = () => {
   const route = useRoute<RouteProps>();
   const { formData } = route.params;
   const { resetForm } = useReportFormStore();
+  const { token } = useAuthStore();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -84,7 +85,7 @@ export const ReportReviewScreen: React.FC = () => {
     
     try {
       const apiCall = isLost ? api.createLostItem : api.createFoundItem;
-      const response = await apiCall(formData);
+      const response = await apiCall(formData, token);
       
       if (response.success && response.data) {
         resetForm();

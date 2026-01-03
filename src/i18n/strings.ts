@@ -267,6 +267,22 @@ const en = {
   found_reports: 'Found Items',
   total_reports: 'Total Reports',
 
+  // Profile sections
+  profile_section: 'PROFILE',
+  settings_section: 'SETTINGS',
+  about_section: 'ABOUT',
+
+  // Theme
+  theme: 'Theme',
+  light: 'Light',
+  dark: 'Dark',
+  auto: 'Auto',
+
+  // Stats
+  success: 'Success',
+  member_since: 'Member',
+  help_support: 'Help & Support',
+
   // About
   about_title: 'About Mafqood',
   about_version: 'Version',
@@ -551,6 +567,22 @@ const ar: typeof en = {
   lost_reports: 'بلاغات المفقودات',
   found_reports: 'بلاغات المعثور عليها',
   total_reports: 'مجموع البلاغات',
+
+  // Profile sections
+  profile_section: 'الملف الشخصي',
+  settings_section: 'الإعدادات',
+  about_section: 'حول التطبيق',
+
+  // Theme
+  theme: 'المظهر',
+  light: 'فاتح',
+  dark: 'داكن',
+  auto: 'تلقائي',
+
+  // Stats
+  success: 'النجاح',
+  member_since: 'عضو منذ',
+  help_support: 'المساعدة والدعم',
 
   // About
   about_title: 'حول مفقود',

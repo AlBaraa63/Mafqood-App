@@ -31,7 +31,7 @@ export const MatchesListScreen: React.FC = () => {
   const { t, isRTL } = useTranslation();
   const { formatRelative } = useFormatDate();
   const navigation = useNavigation<NavigationProp>();
-  const { isGuest } = useAuthStore();
+  const { isGuest, token } = useAuthStore();
   
   const [activeTab, setActiveTab] = useState<TabType>('lost');
   const [lostMatches, setLostMatches] = useState<MatchGroup[]>([]);
@@ -41,7 +41,7 @@ export const MatchesListScreen: React.FC = () => {
   
   const loadMatches = async () => {
     try {
-      const response = await api.getMatches();
+      const response = await api.getMatches(token);
       if (response.success && response.data) {
         setLostMatches(response.data.lostMatches);
         setFoundMatches(response.data.foundMatches);

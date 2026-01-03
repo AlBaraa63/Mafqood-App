@@ -260,14 +260,22 @@ export const NotificationsScreen: React.FC = () => {
 
   const loadNotifications = useCallback(async () => {
     try {
-      // Mock data for demonstration
-      setTimeout(() => {
+      setIsLoading(true);
+      // Import getNotifications from api
+      const { getNotifications } = await import('../../api');
+      const response = await getNotifications();
+      
+      if (response.success && response.data) {
+        setNotifications(response.data);
+      } else {
         setNotifications([]);
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }, 500);
+      }
+      
+      setIsLoading(false);
+      setIsRefreshing(false);
     } catch (error) {
       console.error('Error loading notifications:', error);
+      setNotifications([]);
       setIsLoading(false);
       setIsRefreshing(false);
     }

@@ -23,7 +23,7 @@ import Animated, { FadeIn, FadeInDown, ZoomIn } from 'react-native-reanimated';
 
 import { GlassCard, ProgressStepper, EnhancedButton } from '../../components/ui';
 import { useTranslation, useFormatDate, useHaptics, useDynamicStyles } from '../../hooks';
-import { useReportFormStore } from '../../hooks/useStore';
+import { useReportFormStore, useAuthStore } from '../../hooks/useStore';
 import { ReportStackParamList, ItemFormData, ContactMethod, ItemCategory } from '../../types';
 import { colors, shadows } from '../../theme';
 import api from '../../api';
@@ -144,6 +144,7 @@ export const ReportReviewScreen: React.FC = () => {
   const route = useRoute<RouteProps>();
   const { formData } = route.params;
   const { resetForm } = useReportFormStore();
+  const { token } = useAuthStore();
   const { typography, spacing, layout, isSmallDevice } = useDynamicStyles();
   const haptics = useHaptics();
 
@@ -188,7 +189,7 @@ export const ReportReviewScreen: React.FC = () => {
 
     try {
       const apiCall = isLost ? api.createLostItem : api.createFoundItem;
-      const response = await apiCall(formData);
+      const response = await apiCall(formData, token);
 
       if (response.success && response.data) {
         haptics.success();

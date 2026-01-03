@@ -275,7 +275,7 @@ const StatBadge: React.FC<StatBadgeProps> = ({ icon, value, label, color }) => {
 export const HomeScreen: React.FC = () => {
   const { t, isRTL } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
-  const { isGuest, user } = useAuthStore();
+  const { isGuest, user, token } = useAuthStore();
   const { setType, resetForm } = useReportFormStore();
   const haptics = useHaptics();
   const { typography, spacing, layout, screenSize, isSmallDevice } = useDynamicStyles();
@@ -329,7 +329,7 @@ export const HomeScreen: React.FC = () => {
 
   const loadData = useCallback(async () => {
     try {
-      const response = await api.getMyItems();
+      const response = await api.getMyItems(token);
       if (response.success && response.data) {
         const allItems = [
           ...response.data.lostItems.map(g => g.item),

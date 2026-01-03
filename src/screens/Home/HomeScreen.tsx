@@ -45,7 +45,7 @@ export const HomeScreen: React.FC = () => {
   const { t, isRTL } = useTranslation();
   const { formatRelative } = useFormatDate();
   const navigation = useNavigation<NavigationProp>();
-  const { isGuest, user } = useAuthStore();
+  const { isGuest, user, token } = useAuthStore();
   const { setType, resetForm } = useReportFormStore();
   
   const [recentItems, setRecentItems] = useState<Item[]>([]);
@@ -85,7 +85,7 @@ export const HomeScreen: React.FC = () => {
   
   const loadData = async () => {
     try {
-      const response = await api.getMyItems();
+      const response = await api.getMyItems(token);
       if (response.success && response.data) {
         const allItems = [
           ...response.data.lostItems.map(g => g.item),

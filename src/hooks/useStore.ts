@@ -86,19 +86,26 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
   
   checkAuth: async () => {
+    set({ isLoading: true });
     try {
       const token = await storage.getItem('authToken');
       if (token) {
-        // TODO: Validate token with backend
-        const response = await api.getProfile();
+        // Validate token with backend
+        const response = await api.getProfile(token);
         if (response.success && response.data) {
           set({ user: response.data, token, isAuthenticated: true, isLoading: false });
           return;
         }
+        // Token is invalid or expired, clear it
+        await storage.deleteItem('authToken');
       }
-      set({ isLoading: false });
+      // No token or invalid token - user needs to login
+      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
     } catch (error) {
-      set({ isLoading: false });
+      console.error('Auth check failed:', error);
+      // Clear invalid token on error
+      await storage.deleteItem('authToken');
+      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
     }
   },
 }));

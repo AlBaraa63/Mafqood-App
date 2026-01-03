@@ -50,39 +50,40 @@ function getApiUrl(): string {
 
 export const API_BASE_URL = getApiUrl();
 
+// API version - can be switched to use versioned or legacy endpoints
+const API_VERSION = 'v1'; // Change to '' for legacy endpoints
+
 export const API_ENDPOINTS = {
-  // Auth
-  login: '/api/auth/login',
-  register: '/api/auth/register',
-  logout: '/api/auth/logout',
-  forgotPassword: '/api/auth/forgot-password',
-  refreshToken: '/api/auth/refresh',
+  // Auth (no version prefix for auth routes)
+  login: '/auth/login',
+  register: '/auth/register',
+  logout: '/auth/logout',
+  forgotPassword: '/auth/forgot-password',
+  refreshToken: '/auth/refresh',
   
-  // Items
-  lostItems: '/api/lost',
-  foundItems: '/api/found',
-  myItems: '/api/items/me',
-  itemDetail: (id: string) => `/api/items/${id}`,
-  
-  // Matches
-  matches: '/api/matches',
-  matchDetail: (id: string) => `/api/matches/${id}`,
-  claimMatch: (id: string) => `/api/matches/${id}/claim`,
+  // Items (versioned API)
+  lostItems: `/api/${API_VERSION}/lost`,
+  foundItems: `/api/${API_VERSION}/found`,
+  history: `/api/${API_VERSION}/history`,
+  itemDetail: (id: string) => `/api/${API_VERSION}/items/${id}`,
+  itemMatches: (id: string) => `/api/${API_VERSION}/items/${id}/matches`,
+  deleteItem: (id: string) => `/api/${API_VERSION}/items/${id}`,
   
   // User
-  profile: '/api/users/me',
-  updateProfile: '/api/users/me',
+  profile: '/auth/users/me',
+  updateProfile: '/auth/users/me',
   
-  // Notifications
-  notifications: '/api/notifications',
-  markNotificationRead: (id: string) => `/api/notifications/${id}/read`,
-  markAllNotificationsRead: '/api/notifications/read-all',
+  // Notifications (versioned API)
+  notifications: `/api/${API_VERSION}/notifications`,
+  markNotificationRead: (id: string) => `/api/${API_VERSION}/notifications/${id}/read`,
+  markAllNotificationsRead: `/api/${API_VERSION}/notifications/read-all`,
   
   // Upload
-  uploadImage: '/api/upload/image',
+  uploadImage: `/api/${API_VERSION}/upload/image`,
 
   // Admin/Test
   reset: '/api/reset',
+  health: '/health',
 };
 
 export const API_TIMEOUT = 30000; // 30 seconds

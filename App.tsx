@@ -26,7 +26,8 @@ export default function App() {
       await Promise.all([loadLanguage(), checkAuth(), checkOnboarding()]);
       setBootstrapped(true);
     })();
-  }, [checkAuth, checkOnboarding, loadLanguage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!bootstrapped || isLoading) {
     return (

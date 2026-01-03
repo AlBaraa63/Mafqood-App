@@ -94,3 +94,63 @@ class HealthResponse(BaseModel):
     status: str
     version: str
     timestamp: datetime
+
+
+# ===== Authentication Schemas =====
+
+class UserBase(BaseModel):
+    """Base schema for user data."""
+    email: str = Field(..., description="User's email address")
+    full_name: str = Field(..., min_length=1, max_length=200, description="User's full name", alias="fullName")
+    phone: Optional[str] = Field(None, max_length=20, description="User's phone number")
+    
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class UserCreate(UserBase):
+    """Schema for user registration."""
+    password: str = Field(..., min_length=6, description="User's password (min 6 characters)")
+
+
+class UserUpdate(BaseModel):
+    """Schema for updating user profile."""
+    full_name: Optional[str] = Field(None, min_length=1, max_length=200)
+    phone: Optional[str] = Field(None, max_length=20)
+    password: Optional[str] = Field(None, min_length=6, description="New password (optional)")
+
+
+class UserResponse(BaseModel):
+    """Schema for user data in responses."""
+    id: int
+    email: str
+    full_name: str = Field(alias="fullName")
+    phone: Optional[str]
+    is_active: bool = Field(alias="isActive")
+    is_verified: bool = Field(alias="isVerified")
+    created_at: datetime = Field(alias="createdAt")
+    
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True, by_alias=True)
+
+
+class LoginRequest(BaseModel):
+    """Schema for login request."""
+    email: str = Field(..., description="User's email address")
+    password: str = Field(..., description="User's password")
+
+
+class RegisterRequest(UserCreate):
+    """Schema for registration request (alias for UserCreate)."""
+    pass
+
+
+class AuthResponse(BaseModel):
+    """Response after successful login or registration."""
+    success: bool = True
+    token: str = Field(..., description="JWT access token")
+    user: UserResponse
+
+
+class MessageResponse(BaseModel):
+    """Generic message response."""
+    success: bool
+    message: str

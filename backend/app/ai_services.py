@@ -7,21 +7,22 @@ from PIL import Image
 import easyocr
 from ultralytics import YOLO  # type: ignore
 from . import config
+from .constants import YOLO_MODEL_PATH, OCR_LANGUAGES, OCR_GPU_ENABLED
 
 # --- AI Model Initialization ---
 
 # 1. Object Detection Model (YOLOv8 for stability and performance)
 # We will use a pre-trained general model for the prototype
 try:
-    YOLO_MODEL = YOLO('yolov8n.pt')  # Nano model for fast inference
+    YOLO_MODEL = YOLO(YOLO_MODEL_PATH)
 except Exception as e:
     print(f"Error loading YOLO model: {e}")
     YOLO_MODEL = None
 
 # 2. OCR Model (EasyOCR for multilingual support, including Arabic)
-# Initialize with English and Arabic languages
+# Initialize with configured languages
 try:
-    OCR_READER = easyocr.Reader(['en', 'ar'], gpu=False)
+    OCR_READER = easyocr.Reader(OCR_LANGUAGES, gpu=OCR_GPU_ENABLED)
 except Exception as e:
     print(f"Error loading EasyOCR reader: {e}")
     OCR_READER = None

@@ -40,7 +40,6 @@ interface Notification {
 }
 
 import {
-  mockUser,
   getConfidenceFromSimilarity,
 } from './mockData';
 
@@ -248,7 +247,7 @@ export async function forgotPassword(email: string): Promise<ApiResponse<void>> 
  * Submit a lost item report
  * Connects to backend endpoint with image upload
  */
-export async function createLostItem(formData: ItemFormData): Promise<ApiResponse<ItemSubmitResponse>> {
+export async function createLostItem(formData: ItemFormData, token?: string | null): Promise<ApiResponse<ItemSubmitResponse>> {
   try {
     // Validate required fields
     if (!formData.title || !formData.location || !formData.dateTime) {
@@ -299,7 +298,8 @@ export async function createLostItem(formData: ItemFormData): Promise<ApiRespons
     // Make API request
     const response = await uploadFormData<BackendLostItemResponse>(
       API_ENDPOINTS.lostItems,
-      form
+      form,
+      { token }
     );
     
     // Transform backend response to frontend format
@@ -336,7 +336,7 @@ export async function createLostItem(formData: ItemFormData): Promise<ApiRespons
  * Submit a found item report
  * Connects to backend endpoint with image upload
  */
-export async function createFoundItem(formData: ItemFormData): Promise<ApiResponse<ItemSubmitResponse>> {
+export async function createFoundItem(formData: ItemFormData, token?: string | null): Promise<ApiResponse<ItemSubmitResponse>> {
   try {
     // Validate required fields
     if (!formData.title || !formData.location || !formData.dateTime) {
@@ -387,7 +387,8 @@ export async function createFoundItem(formData: ItemFormData): Promise<ApiRespon
     // Make API request
     const response = await uploadFormData<BackendFoundItemResponse>(
       API_ENDPOINTS.foundItems,
-      form
+      form,
+      { token }
     );
     
     // Transform backend response to frontend format
@@ -422,11 +423,11 @@ export async function createFoundItem(formData: ItemFormData): Promise<ApiRespon
 
 /**
  * Get user's reported items with their matches
- * Connects to backend /api/history endpoint
+ * Connects to backend /api/v1/history endpoint
  */
-export async function getMyItems(): Promise<ApiResponse<HistoryResponse>> {
+export async function getMyItems(token?: string | null): Promise<ApiResponse<HistoryResponse>> {
   try {
-    const response = await get<BackendHistoryResponse>('/api/history');
+    const response = await get<BackendHistoryResponse>(API_ENDPOINTS.history, { token });
     
     // Transform backend response to frontend format
     const lostItems: MatchGroup[] = response.lost_items.map(transformBackendItemWithMatches);
@@ -451,11 +452,11 @@ export async function getMyItems(): Promise<ApiResponse<HistoryResponse>> {
 
 /**
  * Get a single item by ID
- * Connects to backend /api/items/{id} endpoint
+ * Connects to backend /api/v1/items/{id} endpoint
  */
 export async function getItemById(itemId: string): Promise<ApiResponse<Item>> {
   try {
-    const response = await get<BackendItem>(`/api/items/${itemId}`);
+    const response = await get<BackendItem>(API_ENDPOINTS.itemDetail(itemId));
     const item = transformBackendItem(response);
     
     return {
@@ -476,11 +477,11 @@ export async function getItemById(itemId: string): Promise<ApiResponse<Item>> {
 
 /**
  * Get all matches for the current user
- * Uses the same /api/history endpoint as getMyItems
+ * Uses the same /api/v1/history endpoint as getMyItems
  */
-export async function getMatches(): Promise<ApiResponse<{ lostMatches: MatchGroup[]; foundMatches: MatchGroup[] }>> {
+export async function getMatches(token?: string | null): Promise<ApiResponse<{ lostMatches: MatchGroup[]; foundMatches: MatchGroup[] }>> {
   try {
-    const response = await get<BackendHistoryResponse>('/api/history');
+    const response = await get<BackendHistoryResponse>(API_ENDPOINTS.history, { token });
     
     const lostMatches: MatchGroup[] = response.lost_items.map(transformBackendItemWithMatches);
     const foundMatches: MatchGroup[] = response.found_items.map(transformBackendItemWithMatches);
@@ -541,9 +542,9 @@ export async function claimMatch(matchId: string): Promise<ApiResponse<void>> {
 /**
  * Get current user profile
  */
-export async function getProfile(): Promise<ApiResponse<User>> {
+export async function getProfile(token?: string | null): Promise<ApiResponse<User>> {
   try {
-    const response = await get<User>(API_ENDPOINTS.profile);
+    const response = await get<User>(API_ENDPOINTS.profile, { token });
     return {
       success: true,
       data: response,
@@ -665,6 +666,71 @@ export async function markAllNotificationsAsRead(): Promise<ApiResponse<void>> {
   }
 }
 
+// ===== User Stats =====
+
+interface UserStats {
+  reports: number;
+  matches: number;
+  successRate: number;
+  memberSince: string;
+}
+
+/**
+ * Get user statistics (calculated from user's items and matches)
+ */
+export async function getUserStats(): Promise<ApiResponse<UserStats>> {
+  try {
+    // Fetch user's items history to calculate stats
+    const historyResponse = await get<BackendHistoryResponse>('/api/history');
+    
+    const totalReports = historyResponse.lost_items.length + historyResponse.found_items.length;
+    
+    // Count items with matches
+    const itemsWithMatches = [
+      ...historyResponse.lost_items.filter(item => item.matches && item.matches.length > 0),
+      ...historyResponse.found_items.filter(item => item.matches && item.matches.length > 0),
+    ];
+    
+    const totalMatches = itemsWithMatches.length;
+    
+    // Calculate success rate (items with matches / total items)
+    const successRate = totalReports > 0 ? Math.round((totalMatches / totalReports) * 100) : 0;
+    
+    // Get member since year from oldest item or current year
+    let memberSince = new Date().getFullYear().toString();
+    if (historyResponse.lost_items.length > 0 || historyResponse.found_items.length > 0) {
+      const allDates = [
+        ...historyResponse.lost_items.map(item => new Date(item.created_at)),
+        ...historyResponse.found_items.map(item => new Date(item.created_at)),
+      ];
+      const oldestDate = new Date(Math.min(...allDates.map(d => d.getTime())));
+      memberSince = oldestDate.getFullYear().toString();
+    }
+    
+    return {
+      success: true,
+      data: {
+        reports: totalReports,
+        matches: totalMatches,
+        successRate,
+        memberSince,
+      },
+    };
+  } catch (error: any) {
+    console.error('[API] Get user stats error:', error);
+    // Return default stats on error
+    return {
+      success: true,
+      data: {
+        reports: 0,
+        matches: 0,
+        successRate: 0,
+        memberSince: new Date().getFullYear().toString(),
+      },
+    };
+  }
+}
+
 export default {
   // Auth
   login,
@@ -691,6 +757,9 @@ export default {
   getNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  
+  // User Stats
+  getUserStats,
   
   // Upload
   uploadImage,

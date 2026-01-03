@@ -1,21 +1,11 @@
 /**
- * Mafqood App - Minimal Mock Data & Helper Functions
+ * Mafqood App - Helper Functions & Utilities
  * 
- * Only contains mock data for auth (since backend auth not implemented yet)
- * and helper utility functions.
+ * Contains utility functions for the application.
+ * Mock data has been removed - now using real backend authentication.
  */
 
-import { User, ItemStatus, MatchConfidence } from '../types';
-
-// ===== Mock User (for auth until backend implements user authentication) =====
-
-export const mockUser: User = {
-  id: 'user-1',
-  email: 'guest@mafqood.ae',
-  fullName: 'Guest User',
-  phone: '+971501234567',
-  createdAt: new Date().toISOString(),
-};
+import { ItemStatus, MatchConfidence } from '../types';
 
 // ===== Helper Functions =====
 
@@ -41,7 +31,6 @@ export function getStatusColor(status: ItemStatus): string {
 }
 
 export default {
-  mockUser,
   getConfidenceFromSimilarity,
   getStatusColor,
 };

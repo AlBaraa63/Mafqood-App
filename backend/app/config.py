@@ -40,14 +40,6 @@ if ALLOWED_ORIGINS_ENV:
     additional_origins = [origin.strip() for origin in ALLOWED_ORIGINS_ENV.split(",") if origin.strip()]
     ALLOWED_ORIGINS.extend(additional_origins)
 
-# Image Settings
-ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
-MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
-
-# AI Model Settings
-MODEL_NAME = "resnet18"  # or "mobilenet_v2"
-EMBEDDING_DIM = 512  # ResNet18 feature dimension
-TOP_K_MATCHES = 5  # Number of matches to return
 
 # Ensure media directories exist
 LOST_DIR.mkdir(parents=True, exist_ok=True)
