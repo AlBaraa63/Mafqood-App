@@ -683,7 +683,13 @@ export const MatchesListScreen: React.FC = () => {
           <Animated.View entering={FadeInUp.delay(index * 30).springify()} layout={Layout.springify()}>
             <MatchListItem
               matchGroup={item}
-              onPress={() => handleMatchPress(item.matches[0]?.matchedItem?.id || item.item.id)}
+              onPress={() => {
+                // Only navigate if there are actual matches
+                if (item.matches.length > 0 && item.matches[0].id) {
+                  handleMatchPress(item.matches[0].id);
+                }
+                // If no matches, could show a toast or do nothing
+              }}
               isFirst={index === 0}
               isLast={index === section.data.length - 1}
             />

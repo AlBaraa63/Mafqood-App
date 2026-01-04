@@ -180,6 +180,7 @@ export interface BackendItem {
 }
 
 export interface BackendMatchResult {
+  id: string; // Match UUID from backend
   matched_item: BackendItem; // Backend sends "matched_item" not "item"
   similarity: number; // 0.0 to 1.0 (float from backend)
   confidence: string;

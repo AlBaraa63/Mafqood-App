@@ -130,7 +130,7 @@ function transformBackendMatch(backendMatch: BackendMatchResult): Match | null {
   const similarityPercent = backendMatch.similarity * 100; // Convert 0-1 to 0-100
   
   return {
-    id: `match-${backendMatch.matched_item.id}`,
+    id: backendMatch.id || `match-${backendMatch.matched_item.id}`, // Use actual match ID from backend
     userItemId: '', // Will be set by caller
     matchedItemId: String(backendMatch.matched_item.id),
     userItem: matchedItem, // Placeholder, will be filled by caller
