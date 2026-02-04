@@ -1,0 +1,15 @@
+# robots.txt for Mafqood - Dubai AI Lost & Found
+# https://mafqood.albaraaalolabi.dev
+
+User-agent: *
+Allow: /
+
+# Disallow admin or sensitive paths (add if needed in future)
+# Disallow: /admin/
+# Disallow: /api/
+
+# Sitemap location
+Sitemap: https://mafqood.albaraaalolabi.dev/sitemap.xml
+
+# Crawl delay (optional - prevents aggressive crawling)
+Crawl-delay: 1

@@ -1,71 +1,45 @@
-# 🔍 Mafqood App
+# Mafqood - Open Monorepo
 
-**AI-Powered Lost & Found Mobile Application**
+This repository contains the entire Mafqood project, consolidating the Mobile App, Web Platform, and Backend services.
 
-A React Native (Expo) mobile application for reporting and finding lost items using AI-powered image matching and similarity detection.
+## Structure
 
-## ✨ Features
+### 📱 `/mobile`
+**React Native (Expo) Application**
+- The production-grade mobile app for Dubai residents.
+- **Backend:** `mobile/backend` (FastAPI + PostgreSQL + Async) - The main production backend.
+- **Run:** `cd mobile` then `npm start`.
 
-- 📱 **Mobile App**: React Native with Expo
-- 🤖 **AI Matching**: YOLOv8 object detection and image similarity
-- 🔐 **Secure Backend**: FastAPI with SQLite database
-- 📍 **Location Services**: GPS-based item tracking
-- 🔔 **Notifications**: Real-time match alerts
-
-## 🛠️ Tech Stack
-
-### Frontend
-- React Native (Expo)
-- TypeScript
-- NativeWind (Tailwind CSS)
-
-### Backend
-- Python FastAPI
-- SQLite Database
-- YOLOv8 (Object Detection)
-- CLIP (Image Similarity)
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+
-- Python 3.11+
-- Expo CLI
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/AlBaraa63/Mafqood-App.git
-cd Mafqood-App
-
-# Install frontend dependencies
-npm install
-
-# Install backend dependencies
-cd backend
-pip install -r requirements.txt
-cd ..
-
-# Start the development servers
-./start-dev.ps1
-```
-
-## 📁 Project Structure
-
-```
-Mafqood-App/
-├── src/               # React Native source code
-├── backend/           # FastAPI backend
-├── assets/            # Images and static files
-├── App.tsx            # Main app entry
-└── package.json       # Dependencies
-```
-
-## 📝 License
-
-MIT License - see [LICENSE](LICENSE) for details.
+### 🌐 `/web`
+**React Web Showcase**
+- The web-based "Lost & Found" platform MVP.
+- **Backend:** `web/backend` (FastAPI + SQLite) - A lightweight backend optimized for the web demo/showcase.
+- **Run:** `cd web/frontend` then `npm run dev`.
 
 ---
 
-**Made with ❤️ for helping people find what they've lost**
+## Quick Start
+
+### Mobile App
+```bash
+cd mobile
+npm install
+# Start Backend
+cd backend
+pip install -r requirements.txt
+python main.py
+# Start App
+cd ..
+npx expo start
+```
+
+### Web Platform
+```bash
+cd web/frontend
+npm install
+npm run dev
+# Start Web Backend
+cd ../backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
